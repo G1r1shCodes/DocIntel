@@ -1,0 +1,17 @@
+fastapi==0.110.0
+uvicorn==0.29.0
+sqlalchemy==2.0.29
+PyMuPDF==1.24.1
+pytesseract==0.3.10
+sentence-transformers==2.6.1
+faiss-cpu==1.8.0
+rank_bm25==0.2.2
+langchain==0.1.13
+unstructured==0.13.0
+python-multipart==0.0.9
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+pydantic==2.6.4
+pydantic-settings==2.2.1
+openai==1.14.3
+psycopg2-binary==2.9.9
