@@ -1,180 +1,184 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 500" width="100%" height="100%">
-  <!-- CANVAS & BACKGROUND (Slate #0B1220) -->
-  <rect width="1600" height="500" fill="#0B1220" />
+  <!-- CANVAS & BACKGROUND (Pure Minimal Black) -->
+  <rect width="1600" height="500" fill="#000000" />
 
-  <!-- SUBTLE FLOATING DOTS BACKGROUND -->
-  <g fill="#1E293B">
-    <circle cx="100" cy="80" r="2">
-      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite" />
+  <!-- SUBTLE FLOATING AMBIENT DOTS -->
+  <g fill="#27272A">
+    <circle cx="120" cy="70" r="1.5">
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="3s" repeatCount="indefinite" />
     </circle>
-    <circle cx="350" cy="120" r="1.5">
-      <animate attributeName="opacity" values="0.2;0.7;0.2" dur="4s" repeatCount="indefinite" />
+    <circle cx="380" cy="110" r="1.2">
+      <animate attributeName="opacity" values="0.1;0.6;0.1" dur="4s" repeatCount="indefinite" />
     </circle>
-    <circle cx="750" cy="60" r="2">
-      <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.5s" repeatCount="indefinite" />
+    <circle cx="780" cy="50" r="1.5">
+      <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2.5s" repeatCount="indefinite" />
     </circle>
-    <circle cx="1200" cy="100" r="1.5">
-      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="3.5s" repeatCount="indefinite" />
+    <circle cx="1220" cy="90" r="1.2">
+      <animate attributeName="opacity" values="0.2;0.7;0.2" dur="3.5s" repeatCount="indefinite" />
     </circle>
-    <circle cx="1450" cy="70" r="2">
-      <animate attributeName="opacity" values="0.3;0.7;0.3" dur="4.2s" repeatCount="indefinite" />
+    <circle cx="1480" cy="60" r="1.5">
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="4.2s" repeatCount="indefinite" />
     </circle>
-    <circle cx="200" cy="420" r="1.5">
-      <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3.2s" repeatCount="indefinite" />
+    <circle cx="220" cy="430" r="1.2">
+      <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.2s" repeatCount="indefinite" />
     </circle>
-    <circle cx="900" cy="440" r="2">
-      <animate attributeName="opacity" values="0.2;0.7;0.2" dur="2.8s" repeatCount="indefinite" />
+    <circle cx="920" cy="450" r="1.5">
+      <animate attributeName="opacity" values="0.1;0.6;0.1" dur="2.8s" repeatCount="indefinite" />
     </circle>
-    <circle cx="1300" cy="430" r="1.5">
-      <animate attributeName="opacity" values="0.3;0.9;0.3" dur="3.7s" repeatCount="indefinite" />
+    <circle cx="1340" cy="440" r="1.2">
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="3.7s" repeatCount="indefinite" />
     </circle>
   </g>
 
-  <!-- HEADER TITLE (White + Slate, Flat Design, Inter-like) -->
+  <!-- HEADER TITLE SECTION (No Version Pill, Perfectly Centered) -->
   <g transform="translate(800, 75)" text-anchor="middle">
-    <!-- Main Title -->
-    <text y="0" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="800" font-size="44" fill="#FFFFFF" letter-spacing="-0.03em">DocIntel</text>
-    <!-- Subtitle -->
-    <text y="32" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="500" font-size="16" fill="#94A3B8" letter-spacing="0.02em">Enterprise AI Document Intelligence</text>
+    <!-- Sleek Logo Mark + Text Alignment Group -->
+    <g transform="translate(0, -10)">
+      <!-- Logo Mark Icon -->
+      <g transform="translate(-160, -42)">
+        <rect width="48" height="48" rx="12" fill="#FFFFFF" />
+        <path d="M 14 16 L 34 16 M 14 24 L 34 24 M 14 32 L 25 32" stroke="#000000" stroke-width="3" stroke-linecap="round" />
+        <circle cx="36" cy="32" r="3.5" fill="#3B82F6" />
+      </g>
+
+      <!-- Main Title (Modern Grotesk Font Stack) -->
+      <text x="18" y="2" font-family="'Plus Jakarta Sans', 'SF Pro Display', system-ui, -apple-system, sans-serif" font-weight="800" font-size="62" fill="#FFFFFF" letter-spacing="-0.04em">DocIntel</text>
+    </g>
+
+    <!-- Subtitle (Tracked Uppercase Minimalism) -->
+    <text y="38" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#71717A" letter-spacing="4">ENTERPRISE DOCUMENT INTELLIGENCE PLATFORM</text>
   </g>
 
   <!-- PIPELINE CONNECTING LINES -->
-  <g stroke-width="2" fill="none">
+  <g stroke-width="1.5" fill="none">
     <!-- Node 1 -> Node 2 -->
-    <line x1="260" y1="270" x2="330" y2="270" stroke="#1E293B" />
+    <line x1="260" y1="270" x2="330" y2="270" stroke="#27272A" />
     <line x1="260" y1="270" x2="330" y2="270" stroke="#3B82F6" stroke-dasharray="15 100" stroke-dashoffset="0">
       <animate attributeName="stroke-dashoffset" values="115;0" dur="1.4s" repeatCount="indefinite" />
     </line>
 
     <!-- Node 2 -> Node 3 -->
-    <line x1="510" y1="270" x2="580" y2="270" stroke="#1E293B" />
+    <line x1="510" y1="270" x2="580" y2="270" stroke="#27272A" />
     <line x1="510" y1="270" x2="580" y2="270" stroke="#3B82F6" stroke-dasharray="15 100" stroke-dashoffset="0">
       <animate attributeName="stroke-dashoffset" values="115;0" dur="1.4s" repeatCount="indefinite" />
     </line>
 
     <!-- Node 3 -> Node 4 -->
-    <line x1="780" y1="270" x2="850" y2="270" stroke="#1E293B" />
+    <line x1="780" y1="270" x2="850" y2="270" stroke="#27272A" />
     <line x1="780" y1="270" x2="850" y2="270" stroke="#3B82F6" stroke-dasharray="15 100" stroke-dashoffset="0">
       <animate attributeName="stroke-dashoffset" values="115;0" dur="1.4s" repeatCount="indefinite" />
     </line>
 
     <!-- Node 4 -> Node 5 -->
-    <line x1="1030" y1="270" x2="1100" y2="270" stroke="#1E293B" />
+    <line x1="1030" y1="270" x2="1100" y2="270" stroke="#27272A" />
     <line x1="1030" y1="270" x2="1100" y2="270" stroke="#3B82F6" stroke-dasharray="15 100" stroke-dashoffset="0">
       <animate attributeName="stroke-dashoffset" values="115;0" dur="1.4s" repeatCount="indefinite" />
     </line>
 
     <!-- Node 5 -> Node 6 -->
-    <line x1="1260" y1="270" x2="1330" y2="270" stroke="#1E293B" />
+    <line x1="1260" y1="270" x2="1330" y2="270" stroke="#27272A" />
     <line x1="1260" y1="270" x2="1330" y2="270" stroke="#3B82F6" stroke-dasharray="15 100" stroke-dashoffset="0">
       <animate attributeName="stroke-dashoffset" values="115;0" dur="1.4s" repeatCount="indefinite" />
     </line>
 
-    <!-- Citation Return Feedback Arc (Citations back to Document) -->
-    <path d="M 1420 340 L 1420 400 L 170 400 L 170 340" stroke="#334155" stroke-dasharray="6 6" />
-    <path d="M 1420 340 L 1420 400 L 170 400 L 170 340" stroke="#3B82F6" stroke-dasharray="20 300" stroke-dashoffset="0">
+    <!-- Citation Feedback Loop Arc -->
+    <path d="M 1420 340 L 1420 405 L 170 405 L 170 340" stroke="#27272A" stroke-dasharray="4 4" />
+    <path d="M 1420 340 L 1420 405 L 170 405 L 170 340" stroke="#3B82F6" stroke-dasharray="20 300" stroke-dashoffset="0">
       <animate attributeName="stroke-dashoffset" values="320;0" dur="4s" repeatCount="indefinite" />
     </path>
   </g>
 
   <!-- Citation Link Label -->
-  <text x="795" y="420" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="12" fill="#60A5FA" text-anchor="middle" letter-spacing="1">CITATION FEEDBACK LOOP</text>
+  <text x="795" y="425" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="11" fill="#71717A" text-anchor="middle" letter-spacing="1">CITATION FEEDBACK LOOP</text>
 
-  <!-- 6 FLAT PIPELINE CARDS (White + Slate + Blue) -->
+  <!-- 6 UNIFORM MONOCHROME BLACK-THEME CARDS -->
   
   <!-- 1. DOCUMENT -->
   <g transform="translate(80, 200)">
-    <rect width="180" height="140" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
-    <rect width="180" height="34" rx="10" fill="#0F172A" stroke="#334155" stroke-width="1.5" />
-    <text x="90" y="22" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#FFFFFF" text-anchor="middle">Document</text>
+    <rect width="180" height="140" rx="8" fill="#0A0A0A" stroke="#27272A" stroke-width="1" />
+    <rect width="180" height="32" rx="8" fill="#141414" stroke="#27272A" stroke-width="1" />
+    <text x="90" y="21" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="700" font-size="12" fill="#FFFFFF" text-anchor="middle">Document</text>
 
-    <!-- Animated Sliding Document Pages inside Document Card -->
-    <g transform="translate(20, 52)">
-      <rect width="140" height="68" rx="6" fill="#0F172A" stroke="#3B82F6" stroke-width="1" />
-      <text x="14" y="24" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="600" font-size="11" fill="#60A5FA">PDF / DOCX</text>
-      <text x="14" y="42" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="10" fill="#94A3B8">XLSX / CSV / OCR</text>
-      <text x="14" y="56" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="9" fill="#64748B">Multi-Format Ingestion</text>
+    <g transform="translate(18, 48)">
+      <rect width="144" height="74" rx="6" fill="#141414" stroke="#27272A" stroke-width="1" />
+      <text x="12" y="24" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="600" font-size="11" fill="#FFFFFF">PDF / DOCX</text>
+      <text x="12" y="42" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="10" fill="#A1A1AA">XLSX / CSV / OCR</text>
+      <text x="12" y="58" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" fill="#71717A">Multi-Format Ingestion</text>
     </g>
   </g>
 
   <!-- 2. CHUNKING -->
   <g transform="translate(330, 200)">
-    <rect width="180" height="140" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
-    <rect width="180" height="34" rx="10" fill="#0F172A" stroke="#334155" stroke-width="1.5" />
-    <text x="90" y="22" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#FFFFFF" text-anchor="middle">Chunking</text>
+    <rect width="180" height="140" rx="8" fill="#0A0A0A" stroke="#27272A" stroke-width="1" />
+    <rect width="180" height="32" rx="8" fill="#141414" stroke="#27272A" stroke-width="1" />
+    <text x="90" y="21" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="700" font-size="12" fill="#FFFFFF" text-anchor="middle">Chunking</text>
 
-    <!-- Animated Separating Chunk Cards -->
-    <g transform="translate(20, 50)">
-      <!-- Top Chunk Card -->
+    <g transform="translate(18, 48)">
       <g>
-        <animateTransform attributeName="transform" type="translate" values="0,0; 0,-3; 0,0" dur="2.5s" repeatCount="indefinite" />
-        <rect width="140" height="32" rx="4" fill="#0F172A" stroke="#38BDF8" stroke-width="1" />
-        <text x="10" y="20" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="10" fill="#CBD5E1">Heading Chunk #1</text>
+        <rect width="144" height="34" rx="4" fill="#141414" stroke="#27272A" stroke-width="1" />
+        <text x="10" y="21" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="10" fill="#FFFFFF">Heading Chunk #1</text>
       </g>
-      <!-- Bottom Chunk Card -->
-      <g transform="translate(0, 38)">
-        <animateTransform attributeName="transform" type="translate" values="0,0; 0,3; 0,0" dur="2.5s" repeatCount="indefinite" />
-        <rect width="140" height="32" rx="4" fill="#0F172A" stroke="#10B981" stroke-width="1" />
-        <text x="10" y="20" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="10" fill="#A7F3D0">Table Preserved #2</text>
+      <g transform="translate(0, 40)">
+        <rect width="144" height="34" rx="4" fill="#141414" stroke="#27272A" stroke-width="1" />
+        <text x="10" y="21" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="10" fill="#A1A1AA">Table Preserved #2</text>
       </g>
     </g>
   </g>
 
   <!-- 3. HYBRID RAG -->
   <g transform="translate(580, 200)">
-    <rect width="200" height="140" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
-    <rect width="200" height="34" rx="10" fill="#0F172A" stroke="#334155" stroke-width="1.5" />
-    <text x="100" y="22" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#FFFFFF" text-anchor="middle">Hybrid RAG</text>
+    <rect width="200" height="140" rx="8" fill="#0A0A0A" stroke="#27272A" stroke-width="1" />
+    <rect width="200" height="32" rx="8" fill="#141414" stroke="#27272A" stroke-width="1" />
+    <text x="100" y="21" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="700" font-size="12" fill="#FFFFFF" text-anchor="middle">Hybrid RAG</text>
 
-    <!-- Merging Retrieval Paths -->
-    <g transform="translate(15, 48)">
-      <rect width="170" height="34" rx="4" fill="#0F172A" stroke="#2563EB" stroke-width="1" />
-      <text x="10" y="21" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#60A5FA">FAISS Dense (BGE)</text>
+    <g transform="translate(15, 46)">
+      <rect width="170" height="36" rx="4" fill="#141414" stroke="#27272A" stroke-width="1" />
+      <text x="10" y="22" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF">FAISS Dense Vector</text>
 
-      <rect y="42" width="170" height="34" rx="4" fill="#0F172A" stroke="#D97706" stroke-width="1" />
-      <text x="10" y="63" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#FBBF24">BM25 Sparse (Okapi)</text>
+      <rect y="42" width="170" height="36" rx="4" fill="#141414" stroke="#27272A" stroke-width="1" />
+      <text x="10" y="64" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="10" font-weight="600" fill="#A1A1AA">BM25 Sparse Keyword</text>
     </g>
   </g>
 
   <!-- 4. RERANKER -->
   <g transform="translate(850, 200)">
-    <rect width="180" height="140" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
-    <rect width="180" height="34" rx="10" fill="#0F172A" stroke="#334155" stroke-width="1.5" />
-    <text x="90" y="22" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#FFFFFF" text-anchor="middle">Reranker</text>
+    <rect width="180" height="140" rx="8" fill="#0A0A0A" stroke="#27272A" stroke-width="1" />
+    <rect width="180" height="32" rx="8" fill="#141414" stroke="#27272A" stroke-width="1" />
+    <text x="90" y="21" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="700" font-size="12" fill="#FFFFFF" text-anchor="middle">Reranker</text>
 
-    <g transform="translate(15, 52)">
-      <rect width="150" height="68" rx="6" fill="#0F172A" stroke="#8B5CF6" stroke-width="1" />
-      <text x="12" y="24" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="600" font-size="11" fill="#C084FC">Cross-Encoder</text>
-      <text x="12" y="42" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="10" fill="#94A3B8">Top 30 ➔ Top 5</text>
-      <text x="12" y="56" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="9" fill="#64748B">Context Compression</text>
+    <g transform="translate(15, 48)">
+      <rect width="150" height="74" rx="6" fill="#141414" stroke="#27272A" stroke-width="1" />
+      <text x="12" y="24" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="600" font-size="11" fill="#FFFFFF">Cross-Encoder</text>
+      <text x="12" y="42" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="10" fill="#A1A1AA">Top 30 ➔ Top 5</text>
+      <text x="12" y="58" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" fill="#71717A">Context Compression</text>
     </g>
   </g>
 
   <!-- 5. LLM -->
   <g transform="translate(1100, 200)">
-    <rect width="160" height="140" rx="10" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
-    <rect width="160" height="34" rx="10" fill="#0F172A" stroke="#334155" stroke-width="1.5" />
-    <text x="80" y="22" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#FFFFFF" text-anchor="middle">LLM</text>
+    <rect width="160" height="140" rx="8" fill="#0A0A0A" stroke="#27272A" stroke-width="1" />
+    <rect width="160" height="32" rx="8" fill="#141414" stroke="#27272A" stroke-width="1" />
+    <text x="80" y="21" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="700" font-size="12" fill="#FFFFFF" text-anchor="middle">LLM</text>
 
-    <g transform="translate(15, 52)">
-      <rect width="130" height="68" rx="6" fill="#0F172A" stroke="#3B82F6" stroke-width="1" />
-      <text x="12" y="24" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="600" font-size="11" fill="#60A5FA">NVIDIA NIM</text>
-      <text x="12" y="42" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="10" fill="#94A3B8">Groq Fallback</text>
-      <text x="12" y="56" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="9" fill="#64748B">llama3-70b Engine</text>
+    <g transform="translate(15, 48)">
+      <rect width="130" height="74" rx="6" fill="#141414" stroke="#27272A" stroke-width="1" />
+      <text x="12" y="24" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="600" font-size="11" fill="#FFFFFF">NVIDIA NIM</text>
+      <text x="12" y="42" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="10" fill="#A1A1AA">Groq Fallback</text>
+      <text x="12" y="58" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" fill="#71717A">llama3-70b Engine</text>
     </g>
   </g>
 
   <!-- 6. CITATIONS -->
   <g transform="translate(1330, 200)">
-    <rect width="180" height="140" rx="10" fill="#1E293B" stroke="#10B981" stroke-width="1.5" />
-    <rect width="180" height="34" rx="10" fill="#0F172A" stroke="#10B981" stroke-width="1.5" />
-    <text x="90" y="22" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#34D399" text-anchor="middle">Citations</text>
+    <rect width="180" height="140" rx="8" fill="#0A0A0A" stroke="#27272A" stroke-width="1" />
+    <rect width="180" height="32" rx="8" fill="#141414" stroke="#27272A" stroke-width="1" />
+    <text x="90" y="21" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="700" font-size="12" fill="#FFFFFF" text-anchor="middle">Citations</text>
 
-    <g transform="translate(15, 52)">
-      <rect width="150" height="68" rx="6" fill="#0F172A" stroke="#10B981" stroke-width="1" />
-      <text x="12" y="24" font-family="Inter, system-ui, -apple-system, sans-serif" font-weight="600" font-size="11" fill="#A7F3D0">Faithful Answer</text>
-      <text x="12" y="42" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="10" fill="#94A3B8">PDF Highlights</text>
-      <text x="12" y="56" font-family="Inter, system-ui, -apple-system, sans-serif" font-size="9" fill="#64748B">Bounding Box BBox</text>
+    <g transform="translate(15, 48)">
+      <rect width="150" height="74" rx="6" fill="#141414" stroke="#27272A" stroke-width="1" />
+      <text x="12" y="24" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="600" font-size="11" fill="#FFFFFF">Faithful Answer</text>
+      <text x="12" y="42" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="10" fill="#A1A1AA">PDF Highlights</text>
+      <text x="12" y="58" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="9" fill="#71717A">Bounding Box BBox</text>
     </g>
   </g>
 </svg>
