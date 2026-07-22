@@ -34,7 +34,7 @@ By integrating **Adaptive Hierarchical Chunking**, **Hybrid Sparse-Dense Retriev
 The high-level architectural overview illustrating the DocIntel dual pipeline—Document Processing Ingestion and Hybrid RAG Search with Faithfulness Auditing—is shown below:
 
 <p align="center">
-  <img src="./Architecture Diagram.png" alt="DocIntel Enterprise Architecture Diagram" width="100%" style="border-radius: 8px; border: 1px solid #334155;" />
+  <img src="./assets/Architecture Diagram.png" alt="DocIntel Enterprise Architecture Diagram" width="100%" style="border-radius: 8px; border: 1px solid #334155;" />
 </p>
 
 ---
