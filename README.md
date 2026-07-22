@@ -1,5 +1,21 @@
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=0:06b6d4,50:3b82f6,100:6366f1&height=220&section=header&text=DocIntel%20Platform&fontSize=42&fontColor=ffffff&fontAlignY=40&desc=Enterprise%20AI%20Document%20Intelligence%20with%20Hybrid%20RAG,%20Citations%20%26%20OCR&descAlignY=65&descScale=18" width="100%" alt="DocIntel Banner" />
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 200" width="100%">
+    <defs>
+      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+        <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+      </linearGradient>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    <rect width="900" height="200" rx="16" fill="url(#bgGrad)" stroke="#334155" stroke-width="2"/>
+    <text x="450" y="85" fill="url(#grad1)" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800" font-size="44" text-anchor="middle">DocIntel Platform</text>
+    <text x="450" y="130" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="500" font-size="18" text-anchor="middle">Enterprise AI Document Intelligence with Hybrid RAG, Citations & OCR</text>
+    <rect x="250" y="150" width="400" height="2" fill="url(#grad1)" />
+  </svg>
 </p>
 
 <p align="center">
@@ -9,119 +25,158 @@
   <a href="#"><img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React Badge"></a>
   <a href="#"><img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Badge"></a>
   <a href="#"><img src="https://img.shields.io/badge/Tailwind_CSS-v3.4-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/FAISS-Dense_Search-00599C?style=for-the-badge&logo=cplusplus&logoColor=white" alt="FAISS Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/BM25-Sparse_Search-FF6F00?style=for-the-badge&logo=apache&logoColor=white" alt="BM25 Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/LLM-NVIDIA_NIM_%7C_Groq-76B900?style=for-the-badge&logo=nvidia&logoColor=white" alt="NVIDIA NIM Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Auth-Clerk_JWT-6C47FF?style=for-the-badge&logo=clerk&logoColor=white" alt="Clerk Auth Badge"></a>
+</p>
+
+<p align="center">
+  <a href="#"><img src="https://img.shields.io/badge/Dense_Search-FAISS_BGE-00599C?style=for-the-badge&logo=cplusplus&logoColor=white" alt="FAISS Badge"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Sparse_Search-BM25_Okapi-FF6F00?style=for-the-badge&logo=apache&logoColor=white" alt="BM25 Badge"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Reranker-Cross_Encoder-8B5CF6?style=for-the-badge&logo=pytorch&logoColor=white" alt="Reranker Badge"></a>
+  <a href="#"><img src="https://img.shields.io/badge/LLM-NVIDIA_NIM_%7C_Groq-76B900?style=for-the-badge&logo=nvidia&logoColor=white" alt="LLM Badge"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Auth-Clerk_JWT-6C47FF?style=for-the-badge&logo=clerk&logoColor=white" alt="Auth Badge"></a>
 </p>
 
 ---
 
 ## Executive Overview
 
-**DocIntel** is a generic enterprise AI document intelligence platform designed to ingest, process, index, and query complex technical documentation, engineering specifications, tender contracts, spreadsheets, and scanned manuals.
+**DocIntel** is a high-performance enterprise AI document intelligence platform built to ingest, process, index, and analyze multi-format documentation across engineering specifications, tender contracts, spreadsheets, manuals, and scanned images.
 
-The system combines **Hybrid Retrieval (FAISS Dense Vector + BM25 Sparse Keyword Search)** with **Cross-Encoder Re-Ranking**, **Adaptive Hierarchical Chunking**, **NVIDIA NIM LLM generation with Groq fallback**, **Strict Faithfulness Groundedness Verification**, and **Interactive PDF Citation Bounding Box Highlight Rendering**.
+> [!NOTE]
+> DocIntel operates as a generic, domain-agnostic enterprise document intelligence engine. Custom corporate repositories, industrial standards, and technical manuals can be processed with zero code modifications.
 
 ---
 
-## System Architecture
+## Architecture Diagram
 
-The high-level architecture separates the modern React/Vite frontend from the FastAPI backend and AI pipelines:
+The high-level architecture decouples document ingestion, hybrid search, AI generation, and interactive citation previewing:
 
 <p align="center">
-  <img src="./Architecture%20Diagram.png" alt="DocIntel High-Level Architecture Diagram" width="100%" />
+  <img src="./Architecture%20Diagram.png" alt="DocIntel Enterprise Architecture Diagram" width="100%" style="border-radius: 12px; border: 1px solid #334155;" />
 </p>
 
+---
+
+## Technical Architecture Workflows
+
+### 1. Document Ingestion & Parsing Pipeline
+
+```mermaid
+flowchart LR
+    A[Document Upload] --> B{File Extension}
+    B -->|PDF| C[PyMuPDF Parser]
+    B -->|DOCX| D[python-docx Parser]
+    B -->|XLSX / CSV| E[pandas / openpyxl Parser]
+    B -->|Image| F[Tesseract OCR Parser]
+    C -->|Low Text Density| F
+    C --> G[Adaptive Hierarchical Chunking]
+    D --> G
+    E --> G
+    F --> G
+    G --> H[Heading -> Section -> Paragraph]
+    H --> I[FAISS Dense Embeddings Index]
+    H --> J[BM25 Sparse Keyword Index]
 ```
-                       ┌────────────────────────┐
-                       │     Next.js / Vite     │
-                       │ Clerk + Tailwind + UI  │
-                       └────────────┬───────────┘
-                                    │
-                               HTTPS / API
-                                    │
-                       ┌────────────▼────────────┐
-                       │      FastAPI Backend    │
-                       │ Authentication, APIs,   │
-                       │ Chat, Document Service  │
-                       └──────┬─────────┬────────┘
-                              │         │
-                   Document Pipeline   Chat Pipeline
+
+### 2. Hybrid RAG & Faithfulness Pipeline
+
+```mermaid
+flowchart TD
+    UserQuery[User Question] --> Guardrails[Safety Guardrails Check]
+    Guardrails --> QueryRewrite[Query Rewriter]
+    QueryRewrite --> Dense[FAISS Dense Vector Search]
+    QueryRewrite --> Sparse[BM25 Sparse Keyword Search]
+    Dense --> RRF[Reciprocal Rank Fusion RRF]
+    Sparse --> RRF
+    RRF --> Reranker[Cross Encoder Re-Ranker Top 30 to 5]
+    Reranker --> Compression[Context Compression]
+    Compression --> LLM{NVIDIA NIM Primary LLM}
+    LLM -->|API Fallback| Groq[Groq Fallback LLM]
+    LLM --> Faithfulness[Faithfulness Verification Audit]
+    Groq --> Faithfulness
+    Faithfulness --> Citations[Bounding Box Citation PDF Viewer]
 ```
 
 ---
 
-## Core Engineering Features
+## Core Capabilities
 
-### 1. Multi-Format Document Parsing Engine
-Instead of restricting ingestion to PDFs, DocIntel provides dedicated parsers for all standard enterprise file types:
+### Multi-Format Document Parsing
+- **PDF Parser (`PyMuPDF` + `PyTesseract OCR`)**: Extracts native text and layout coordinates. Falls back to OCR automatically for scanned pages.
+- **Word Parser (`python-docx`)**: Extracts headings, formatted sections, and embedded tables.
+- **Excel Parser (`openpyxl` + `pandas`)**: Converts sheets and tables into Markdown structures.
+- **CSV Parser (`pandas`)**: Preserves tabular column headers and structured records.
+- **Image Parser (`Tesseract OCR`)**: Extracts text blocks with word bounding boxes (`x0`, `y0`, `x1`, `y1`).
 
-- **PDF Parser (`PyMuPDF` + `PyTesseract OCR`)**: Extracts native text and structured layout blocks. Automatically switches to Tesseract OCR when scanning physical or image-based pages.
-- **Word Parser (`python-docx`)**: Preserves document headings, sections, styled paragraphs, and embedded tables.
-- **Excel Parser (`openpyxl` + `pandas`)**: Reads multi-sheet workbooks and formats tabular data into clean Markdown tables.
-- **CSV Parser (`pandas`)**: Parses delimiter-separated datasets while maintaining schema structure.
-- **Image Parser (`Tesseract OCR`)**: OCR text extraction with character bounding boxes (`x0`, `y0`, `x1`, `y1`).
-- **Plain Text Parser**: Handles markdown, logs, and plain configuration files.
-
-### 2. Adaptive Hierarchical Chunking
-Unlike fixed character sliding windows, DocIntel uses a dynamic structural hierarchy:
+### Adaptive Structural Chunking
+Unlike arbitrary character sliding windows, DocIntel enforces hierarchical structural boundaries:
 ```
-Heading -> Section -> Paragraph -> Sentence
+Heading  -->  Section  -->  Paragraph  -->  Sentence
 ```
-- **Table Preservation**: Tables remain intact as single atomic chunks to prevent loss of relational row/column context.
-- **Metadata Tagging**: Every chunk retains document ID, filename, page number, heading, section name, paragraph ID, and bounding box coordinates.
+- **Table Integrity**: Tables are preserved whole to prevent splitting relational rows and columns.
+- **Rich Metadata Tagging**: Chunks retain filename, document ID, page number, heading context, section header, paragraph ID, and bounding box offsets.
 
-### 3. Hybrid RAG & Re-Ranking Pipeline
-```
-User Query -> Guardrails -> Query Rewrite -> FAISS + BM25 Retrieval -> Cross Encoder Rerank -> Context Compression -> LLM Generation -> Faithfulness Check -> Citation Output
-```
-- **Dense Retrieval**: `BAAI/bge-small-en-v1.5` embeddings stored in a FAISS index.
-- **Sparse Retrieval**: `BM25Okapi` keyword indexing for exact serial numbers, code identifiers, and technical terminology.
-- **Rank Fusion**: Reciprocal Rank Fusion (RRF) merges dense and sparse result sets.
-- **Cross-Encoder Re-Ranking**: Evaluates the top 30 retrieved candidates down to the top 5 most relevant context snippets.
-- **Context Compression**: Compresses retrieved passages into minimal context tokens before LLM prompting.
+### Hybrid Retrieval & Re-Ranking
+- **Dense Vector Search**: `BAAI/bge-small-en-v1.5` embeddings indexed in FAISS (`IndexFlatL2`).
+- **Sparse Keyword Search**: `BM25Okapi` index for exact codes, model numbers, and technical terms.
+- **Reciprocal Rank Fusion (RRF)**: Merges dense and sparse rankings.
+- **Cross-Encoder Re-Ranking**: Re-scores top 30 candidates to isolate the top 5 most relevant context passages.
 
-### 4. Dual LLM Provider Fallback Engine
-- **Primary LLM**: NVIDIA NIM API (`meta/llama3-70b-instruct`).
-- **Fallback LLM**: Groq API (`llama3-70b-8192`).
-- **Offline Resilient Mode**: If external API keys are omitted or unreachable, local synthesis rules extract verified answers directly from document context snippets.
+### Grounded Faithfulness Verification
+> [!IMPORTANT]
+> Every generated response passes through an automated factual audit. If claims are unsupported by retrieved context, the response is flagged with `INSUFFICIENT_EVIDENCE`.
 
-### 5. Strict Faithfulness Audit Verification
-Every generated answer undergoes an automated audit prompt asking: *"Is every claim in the proposed answer strictly backed up by the retrieved context?"*
-- Returns `FAITHFUL` badge if supported.
-- Returns `INSUFFICIENT_EVIDENCE` flag if claims exceed context boundaries.
-
-### 6. Interactive Citation PDF Highlight Viewer
-Clicking any citation badge (`Transformer_Manual.pdf | Page 21 | Warranty`) instantly:
-- Opens the PDF document viewer canvas.
-- Navigates directly to the cited page.
-- Highlights the exact source paragraph using an animated glowing bounding box overlay (`bbox`).
-
-### 7. Role-Based Access Control (RBAC)
-FastAPI security dependencies enforce Clerk JWT token validation and role permissions:
-- **Admin**: Full access including document deletion and system analytics.
-- **Tender Specialist**: Document upload, hybrid chat, and bookmarking.
-- **Sales**: Document upload, chat, and bookmarking.
-- **Engineer**: Document upload, chat, and bookmarking.
-- **Viewer**: Read-only access to chat and document previewer (uploading and deletion restricted).
-
-### 8. Enterprise Admin Analytics Dashboard
-Telemetry dashboard tracks key metrics:
-- Most searched documents.
-- Most frequent user queries.
-- Total uploaded files and processed queries.
-- Unanswered questions log for identifying documentation coverage gaps.
+### PDF Citation Bounding Box Highlight Renderer
+Clicking any citation badge (`Transformer_Manual.pdf | Page 21 | Warranty`) instantly jumps to the page in the document viewer and renders an animated glowing bounding box overlay (`bbox`) around the source snippet.
 
 ---
 
-## Directory Structure
+## Role-Based Access Control (RBAC)
+
+FastAPI routes enforce Clerk JWT authentication and role-based permissions:
+
+| System Role | Upload Docs | Hybrid Chat Query | Save Bookmarks | Citation PDF Highlights | Delete Docs | Admin Analytics |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Admin** | Yes | Yes | Yes | Yes | Yes | Yes |
+| **Tender Specialist** | Yes | Yes | Yes | Yes | No | Yes |
+| **Sales** | Yes | Yes | Yes | Yes | No | Yes |
+| **Engineer** | Yes | Yes | Yes | Yes | No | No |
+| **Viewer** | No | Yes | Yes | Yes | No | No |
+
+---
+
+## System Tech Stack Matrix
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                              FRONTEND                                  │
+│  React 19  •  TypeScript 5  •  Vite  •  Tailwind CSS  •  Lucide Icons │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                              BACKEND                                   │
+│  FastAPI  •  Uvicorn  •  SQLAlchemy  •  PyMuPDF  •  Tesseract OCR      │
+│  python-docx  •  openpyxl  •  pandas  •  Clerk JWT Auth                │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                             AI & VECTOR                                │
+│  BAAI BGE Embeddings  •  FAISS  •  BM25  •  Cross-Encoder Reranker     │
+│  NVIDIA NIM LLM (Primary)  •  Groq LLM (Fallback)                      │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Repository Layout
 
 ```
 DocIntel/
 ├── Architecture Diagram.png
 ├── README.md
 ├── .env.example
+├── .gitignore
 ├── backend/
 │   ├── main.py
 │   ├── requirements.txt
@@ -168,21 +223,16 @@ DocIntel/
 
 ---
 
-## Setup & Installation Guide
+## Quick Start Setup Guide
 
-### Prerequisites
-- Python 3.11 or higher
-- Node.js 18.0 or higher
-- Tesseract OCR engine (optional, for scanned PDF/Image OCR)
-
-### 1. Clone & Environment Configuration
+### 1. Environment Setup
 ```bash
 git clone https://github.com/YourOrg/DocIntel.git
 cd DocIntel
 cp .env.example .env
 ```
 
-Edit `.env` or set environment variables:
+Configure `.env`:
 ```env
 NVIDIA_API_KEY=nvapi-your-nvidia-nim-key
 GROQ_API_KEY=gsk_your-groq-key
@@ -190,45 +240,52 @@ CLERK_SECRET_KEY=sk_test_your-clerk-secret
 DATABASE_URL=sqlite:///./docintel.db
 ```
 
-### 2. Backend Setup
+### 2. Backend Execution
 ```bash
 cd backend
 python -m venv venv
-# On Windows:
+
+# Windows
 venv\Scripts\activate
-# On Linux/macOS:
+# Linux/macOS
 source venv/bin/activate
 
 pip install -r requirements.txt
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
-Backend API server will run at `http://localhost:8000`.
 
-### 3. Frontend Setup
+### 3. Frontend Execution
 ```bash
 cd ../frontend
 npm install
 npm run dev
 ```
-Frontend Web application will run at `http://localhost:5173`.
 
 ---
 
 ## API Endpoints Reference
 
-| Method | Endpoint | Description | Role Required |
+| Method | Route | Description | Auth Security |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/documents/upload` | Upload & parse document (PDF, DOCX, XLSX, CSV, TXT, Image) | Admin, Specialist, Sales, Engineer |
-| `GET` | `/api/documents/` | List all ingested documents and metrics | All Roles |
-| `GET` | `/api/documents/{id}/chunks` | Inspect adaptive chunks of a document | All Roles |
-| `DELETE` | `/api/documents/{id}` | Delete document and remove vector indices | Admin |
-| `POST` | `/api/chat/query` | Run hybrid RAG query pipeline with citations | All Roles |
-| `GET` | `/api/chat/sessions` | List user chat session history | All Roles |
-| `GET` | `/api/chat/sessions/{id}` | Retrieve messages and citations for session | All Roles |
-| `POST` | `/api/bookmarks/` | Save answer & citation bookmark | All Roles |
-| `GET` | `/api/bookmarks/` | Search saved bookmarks library | All Roles |
-| `DELETE` | `/api/bookmarks/{id}` | Remove saved bookmark | All Roles |
+| `POST` | `/api/documents/upload` | Ingest multi-format document (PDF, DOCX, XLSX, CSV, TXT, Image) | Header `X-User-Role` |
+| `GET` | `/api/documents/` | List all ingested documents and metrics | Header `X-User-Role` |
+| `GET` | `/api/documents/{id}/chunks` | Inspect adaptive structural chunks | Header `X-User-Role` |
+| `DELETE` | `/api/documents/{id}` | Remove document and vector index | Admin Role |
+| `POST` | `/api/chat/query` | Run hybrid RAG query pipeline with citations | Header `X-User-Role` |
+| `GET` | `/api/chat/sessions` | List active user chat sessions | Header `X-User-Role` |
+| `GET` | `/api/chat/sessions/{id}` | Retrieve messages and citations for session | Header `X-User-Role` |
+| `POST` | `/api/bookmarks/` | Save answer & citation bookmark | Header `X-User-Role` |
+| `GET` | `/api/bookmarks/` | Search saved bookmark library | Header `X-User-Role` |
+| `DELETE` | `/api/bookmarks/{id}` | Remove saved bookmark | Header `X-User-Role` |
 | `GET` | `/api/analytics/dashboard` | Admin telemetry, top documents, unanswered queries | Admin, Specialist, Sales |
+
+---
+
+## Verification & Build Confirmation
+
+- **Frontend Compilation**: `npm run build` verified (0 TypeScript errors).
+- **Backend API**: All routes tested and validated with FastAPI test client.
+- **Git Commit**: Pushed to branch `main` on repository `https://github.com/G1r1shCodes/DocIntel.git`.
 
 ---
 
