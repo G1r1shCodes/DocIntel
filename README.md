@@ -1,27 +1,19 @@
-```text
-██████╗  ██████╗  ██████╗██╗███╗   ██╗████████╗███████╗██╗
-██╔══██╗██╔═══██╗██╔════╝██║████╗  ██║╚══██╔══╝██╔════╝██║
-██║  ██║██║   ██║██║     ██║██╔██╗ ██║   ██║   █████╗  ██║
-██║  ██║██║   ██║██║     ██║██║╚██╗██║   ██║   ██╔══╝  ██║
-██████╔╝╚██████╔╝╚██████╗██║██║ ╚████║   ██║   ███████╗███████╗
-╚═════╝  ╚═════╝  ╚═════╝╚═╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚══════╝
-```
+# DocIntel
 
-<p align="center">
-  <a href="#"><img src="https://img.shields.io/badge/Platform-DocIntel_v1.0-06b6d4?style=for-the-badge&logo=hyper&logoColor=white" alt="Platform Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/FastAPI-0.110-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Tailwind_CSS-v3.4-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind Badge"></a>
-</p>
+**Enterprise AI Document Intelligence Engine** • Multi-Format Pipeline • Hybrid RAG • Grounded Citations
 
-<p align="center">
-  <a href="#"><img src="https://img.shields.io/badge/Dense_Search-FAISS_BGE-00599C?style=for-the-badge&logo=cplusplus&logoColor=white" alt="FAISS Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Sparse_Search-BM25_Okapi-FF6F00?style=for-the-badge&logo=apache&logoColor=white" alt="BM25 Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Reranker-Cross_Encoder-8B5CF6?style=for-the-badge&logo=pytorch&logoColor=white" alt="Reranker Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/LLM-NVIDIA_NIM_%7C_Groq-76B900?style=for-the-badge&logo=nvidia&logoColor=white" alt="LLM Badge"></a>
-  <a href="#"><img src="https://img.shields.io/badge/Auth-Clerk_JWT-6C47FF?style=for-the-badge&logo=clerk&logoColor=white" alt="Auth Badge"></a>
+<p align="left">
+  <img src="https://img.shields.io/badge/Platform-DocIntel_v1.0-06b6d4?style=flat-square&logo=hyper&logoColor=white" alt="Platform" />
+  <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Tailwind-v3.4-38BDF8?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/Dense-FAISS_BGE-00599C?style=flat-square&logo=cplusplus&logoColor=white" alt="FAISS" />
+  <img src="https://img.shields.io/badge/Sparse-BM25-FF6F00?style=flat-square&logo=apache&logoColor=white" alt="BM25" />
+  <img src="https://img.shields.io/badge/Reranker-Cross_Encoder-8B5CF6?style=flat-square&logo=pytorch&logoColor=white" alt="Reranker" />
+  <img src="https://img.shields.io/badge/LLM-NVIDIA_NIM_%7C_Groq-76B900?style=flat-square&logo=nvidia&logoColor=white" alt="LLM" />
+  <img src="https://img.shields.io/badge/Auth-Clerk_JWT-6C47FF?style=flat-square&logo=clerk&logoColor=white" alt="Auth" />
 </p>
 
 ---
