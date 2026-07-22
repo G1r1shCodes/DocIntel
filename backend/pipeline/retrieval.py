@@ -1,71 +1,141 @@
+import numpy as np
+from typing import List, Dict, Any
 from sentence_transformers import SentenceTransformer, CrossEncoder
 import faiss
-import numpy as np
 from rank_bm25 import BM25Okapi
+import logging
 
-# Initialize models
-embedder = SentenceTransformer("BAAI/bge-large-en-v1.5")
-cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+logger = logging.getLogger(__name__)
 
-# Stubs for indices
-# In production, these should be persisted and loaded, potentially mapped to document IDs
-vector_index = None
-bm25_index = None
-corpus_chunks = []
+# Initialize models lazily or globally
+_embedder = None
+_cross_encoder = None
 
-def initialize_indices(chunks: list[str]):
-    global vector_index, bm25_index, corpus_chunks
-    corpus_chunks = chunks
-    
-    # Setup FAISS
-    embeddings = embedder.encode(chunks)
-    dimension = embeddings.shape[1]
-    vector_index = faiss.IndexFlatL2(dimension)
-    vector_index.add(np.array(embeddings).astype('float32'))
-    
-    # Setup BM25
-    tokenized_chunks = [chunk.split(" ") for chunk in chunks]
-    bm25_index = BM25Okapi(tokenized_chunks)
+def get_embedder():
+    global _embedder
+    if _embedder is None:
+        try:
+            _embedder = SentenceTransformer("BAAI/bge-small-en-v1.5")
+        except Exception as e:
+            logger.warning(f"Could not load BGE model, using all-MiniLM-L6-v2 fallback: {e}")
+            _embedder = SentenceTransformer("all-MiniLM-L6-v2")
+    return _embedder
 
-def hybrid_search(query: str, top_k: int = 10):
-    """
-    Performs hybrid search using FAISS (dense) and BM25 (sparse).
-    """
-    if not corpus_chunks:
-        return []
+def get_cross_encoder():
+    global _cross_encoder
+    if _cross_encoder is None:
+        try:
+            _cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+        except Exception as e:
+            logger.warning(f"Could not load CrossEncoder: {e}")
+            _cross_encoder = None
+    return _cross_encoder
+
+
+class HybridRetriever:
+    def __init__(self):
+        self.chunks: List[Dict[str, Any]] = []
+        self.vector_index = None
+        self.bm25_index = None
+        self.embeddings = None
+
+    def index_chunks(self, chunks: List[Dict[str, Any]]):
+        """
+        Indexes a list of structured chunk dicts into FAISS (dense) and BM25 (sparse).
+        """
+        if not chunks:
+            return
         
-    # Dense retrieval
-    query_embedding = embedder.encode([query])
-    D, I = vector_index.search(np.array(query_embedding).astype('float32'), top_k)
-    dense_results = [corpus_chunks[i] for i in I[0]]
-    
-    # Sparse retrieval
-    tokenized_query = query.split(" ")
-    sparse_results = bm25_index.get_top_n(tokenized_query, corpus_chunks, n=top_k)
-    
-    # Combine unique results
-    combined_results = list(set(dense_results + sparse_results))
-    return combined_results
-
-def re_rank_results(query: str, results: list[str], top_n: int = 3):
-    """
-    Re-ranks hybrid search results using a cross-encoder.
-    """
-    if not results:
-        return []
+        self.chunks = chunks
+        embedder = get_embedder()
         
-    pairs = [[query, res] for res in results]
-    scores = cross_encoder.predict(pairs)
-    
-    # Sort by scores
-    ranked_indices = np.argsort(scores)[::-1]
-    ranked_results = [results[i] for i in ranked_indices][:top_n]
-    
-    return ranked_results
+        # Dense indexing via SentenceTransformer & FAISS
+        texts = [c["text"] for c in chunks]
+        embeddings = embedder.encode(texts, show_progress_bar=False)
+        self.embeddings = np.array(embeddings).astype("float32")
+        
+        dimension = self.embeddings.shape[1]
+        self.vector_index = faiss.IndexFlatL2(dimension)
+        self.vector_index.add(self.embeddings)
 
-def compress_context(query: str, ranked_chunks: list[str]):
+        # Sparse indexing via BM25
+        tokenized_corpus = [t.lower().split() for t in texts]
+        self.bm25_index = BM25Okapi(tokenized_corpus)
+
+    def add_chunks(self, new_chunks: List[Dict[str, Any]]):
+        """
+        Appends new chunks to existing index.
+        """
+        all_chunks = self.chunks + new_chunks
+        self.index_chunks(all_chunks)
+
+    def hybrid_search(self, query: str, top_k_dense: int = 20, top_k_sparse: int = 20, top_n_rerank: int = 5) -> List[Dict[str, Any]]:
+        """
+        Executes dense FAISS + sparse BM25 hybrid search, RRF rank fusion, cross-encoder re-ranking (Top 30 -> Top 5).
+        """
+        if not self.chunks or self.vector_index is None:
+            return []
+
+        # 1. Dense retrieval
+        embedder = get_embedder()
+        query_vector = embedder.encode([query]).astype("float32")
+        distances, dense_indices = self.vector_index.search(query_vector, min(top_k_dense, len(self.chunks)))
+        
+        # 2. Sparse retrieval
+        tokenized_query = query.lower().split()
+        bm25_scores = self.bm25_index.get_scores(tokenized_query)
+        sparse_indices = np.argsort(bm25_scores)[::-1][:min(top_k_sparse, len(self.chunks))]
+
+        # 3. Reciprocal Rank Fusion (RRF)
+        rrf_scores: Dict[int, float] = {}
+        k = 60
+        
+        for rank, idx in enumerate(dense_indices[0]):
+            rrf_scores[idx] = rrf_scores.get(idx, 0.0) + 1.0 / (k + rank + 1)
+
+        for rank, idx in enumerate(sparse_indices):
+            rrf_scores[idx] = rrf_scores.get(idx, 0.0) + 1.0 / (k + rank + 1)
+
+        # Sort top candidate indices by RRF score
+        sorted_candidate_indices = sorted(rrf_scores.keys(), key=lambda i: rrf_scores[i], reverse=True)[:30]
+        candidate_chunks = [self.chunks[i] for i in sorted_candidate_indices]
+
+        # 4. Cross-Encoder Re-Ranking (Top 30 -> Top 5)
+        cross_enc = get_cross_encoder()
+        if cross_enc and candidate_chunks:
+            pairs = [[query, c["text"]] for c in candidate_chunks]
+            scores = cross_enc.predict(pairs)
+            ranked_indices = np.argsort(scores)[::-1][:top_n_rerank]
+            final_reranked = [candidate_chunks[i] for i in ranked_indices]
+        else:
+            final_reranked = candidate_chunks[:top_n_rerank]
+
+        return final_reranked
+
+
+def compress_context(query: str, retrieved_chunks: List[Dict[str, Any]], max_chars: int = 1500) -> str:
     """
-    Compresses context. A simple stub for sentence extraction or LLMLingua.
+    Compresses retrieved context to essential paragraphs to reduce LLM prompt size.
     """
-    # Simple concatenation for now
-    return "\n\n".join(ranked_chunks)
+    compressed_text_blocks = []
+    total_length = 0
+
+    for chunk in retrieved_chunks:
+        text = chunk.get("text", "")
+        heading = chunk.get("heading", "General")
+        page = chunk.get("page_number", 1)
+        filename = chunk.get("metadata", {}).get("filename", "document")
+        
+        header_info = f"[Source: {filename} | Page {page} | {heading}]"
+        block = f"{header_info}\n{text}"
+
+        if total_length + len(block) > max_chars:
+            break
+            
+        compressed_text_blocks.append(block)
+        total_length += len(block)
+
+    return "\n\n---\n\n".join(compressed_text_blocks)
+
+# Global retriever instance
+retriever_instance = HybridRetriever()

@@ -1,62 +1,33 @@
-import fitz  # PyMuPDF
-import pytesseract
-from PIL import Image
-import io
+import os
+from typing import Dict, Any, List
+from parsers import parse_document
+from .adaptive_chunking import adaptive_chunking
+from .retrieval import retriever_instance
 
-def parse_pdf(file_path: str):
+def process_and_ingest_file(file_path: str) -> Dict[str, Any]:
     """
-    Parses a PDF, extracting text and bounding boxes.
-    Uses OCR fallback if text is not present.
+    Complete document ingestion pipeline:
+    1. Multi-format parsing (PDF, DOCX, XLSX, CSV, TXT, Image)
+    2. Adaptive Hierarchical Chunking (Heading -> Section -> Paragraph -> Sentence)
+    3. Indexing into Hybrid FAISS + BM25 Retriever
     """
-    doc = fitz.open(file_path)
-    pages_data = []
-    
-    for page_num in range(len(doc)):
-        page = doc.load_page(page_num)
-        text_dict = page.get_text("dict")
-        text = page.get_text()
-        
-        # If very little text, assume scanned and use OCR fallback
-        if not text.strip():
-            pix = page.get_pixmap()
-            img = Image.open(io.BytesIO(pix.tobytes("png")))
-            # Get data with bounding boxes
-            ocr_data = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
-            
-            blocks = []
-            n_boxes = len(ocr_data['level'])
-            for i in range(n_boxes):
-                if ocr_data['text'][i].strip():
-                    blocks.append({
-                        "text": ocr_data['text'][i],
-                        "bbox": (
-                            ocr_data['left'][i], 
-                            ocr_data['top'][i], 
-                            ocr_data['left'][i] + ocr_data['width'][i], 
-                            ocr_data['top'][i] + ocr_data['height'][i]
-                        )
-                    })
-            
-            pages_data.append({
-                "page": page_num + 1,
-                "text": pytesseract.image_to_string(img),
-                "blocks": blocks,
-                "is_ocr": True
-            })
-        else:
-            pages_data.append({
-                "page": page_num + 1,
-                "text": text,
-                "blocks": text_dict.get("blocks", []),
-                "is_ocr": False
-            })
-            
-    return pages_data
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File not found: {file_path}")
 
-def adaptive_chunking(pages_data):
-    """
-    Chunks text based on semantic boundaries (headings/paragraphs)
-    """
-    chunks = []
-    # TODO: Implement semantic chunking using Unstructured/Langchain
-    return chunks
+    # 1. Parse document into standardized DocumentData
+    parsed_doc = parse_document(file_path)
+
+    # 2. Apply adaptive chunking
+    chunks = adaptive_chunking(parsed_doc)
+
+    # 3. Add chunks to hybrid retriever index
+    retriever_instance.add_chunks(chunks)
+
+    return {
+        "filename": parsed_doc.filename,
+        "file_type": parsed_doc.file_type,
+        "page_count": len(parsed_doc.pages),
+        "chunk_count": len(chunks),
+        "metadata": parsed_doc.metadata,
+        "chunks": chunks
+    }
