@@ -86,7 +86,7 @@ export function App() {
           heading: 'Section 4.2 - Technical Specifications',
           section: 'Page 1',
           text_snippet: 'Standard system warranty includes 5-year full replacement coverage including surge protection under ISO-9001 certification.',
-          bbox: { x0: 32, y0: 205, x1: 588, y1: 295 }
+          bbox: { x0: 32, y0: 225, x1: 588, y1: 335 }
         }
       ]
     }

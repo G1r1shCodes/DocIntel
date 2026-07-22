@@ -79,7 +79,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
       {/* Document Canvas */}
       <div className="relative flex-1 overflow-auto p-6 bg-surface-1 flex justify-center items-start">
         <div
-          className="relative bg-surface-0 border border-border-subtle rounded-lg shadow-sm p-8 min-h-[600px] transition-transform duration-200"
+          className="relative bg-surface-0 border border-border-subtle rounded-lg shadow-sm p-8 flex-shrink-0 transition-transform duration-200"
           style={{ width: `${Math.round(620 * (zoom / 100))}px`, minHeight: `${Math.round(800 * (zoom / 100))}px` }}
         >
           <div className="flex justify-between items-center text-xs text-text-muted border-b border-border-subtle pb-3 mb-6 font-mono">
