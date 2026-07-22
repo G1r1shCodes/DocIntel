@@ -1,0 +1,540 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <!-- Background Blueprint Grid Pattern -->
+    <pattern id="blueprint-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1E293B" stroke-width="0.8" stroke-opacity="0.5" />
+    </pattern>
+
+    <!-- Gradients -->
+    <linearGradient id="header-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="50%" stop-color="#60A5FA" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+
+    <linearGradient id="card-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#111827" stop-opacity="0.9" />
+    </linearGradient>
+
+    <linearGradient id="blue-beam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.1" />
+      <stop offset="50%" stop-color="#60A5FA" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.1" />
+    </linearGradient>
+
+    <linearGradient id="orange-beam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.1" />
+      <stop offset="50%" stop-color="#FBBF24" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.1" />
+    </linearGradient>
+
+    <linearGradient id="green-beam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22C55E" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0.9" />
+    </linearGradient>
+
+    <!-- Subtle Drop Shadow -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- 1. BACKGROUND CANVAS & GRID -->
+  <rect width="1600" height="900" fill="#0B1220" />
+  <rect width="1600" height="900" fill="url(#blueprint-grid)" />
+
+  <!-- Subtle Moving Background Ambient Particles -->
+  <circle cx="200" cy="180" r="1.5" fill="#60A5FA" opacity="0.3">
+    <animate attributeName="cy" values="180;160;180" dur="8s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="750" cy="800" r="2" fill="#8B5CF6" opacity="0.25">
+    <animate attributeName="cx" values="750;770;750" dur="10s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="1300" cy="140" r="1.5" fill="#22C55E" opacity="0.3">
+    <animate attributeName="cy" values="140;160;140" dur="7s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- 2. HEADER BAR -->
+  <g transform="translate(60, 45)">
+    <!-- Title -->
+    <text x="0" y="28" font-family="Inter, -apple-system, sans-serif" font-weight="800" font-size="30" fill="#FFFFFF" letter-spacing="-0.5">DocIntel</text>
+    <text x="145" y="28" font-family="Inter, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#60A5FA" letter-spacing="1.5">ENTERPRISE AI DOCUMENT INTELLIGENCE PLATFORM</text>
+
+    <!-- Subtitle metadata -->
+    <text x="0" y="52" font-family="Inter, -apple-system, sans-serif" font-weight="400" font-size="12" fill="#94A3B8">Hybrid RAG Engine • Native &amp; OCR Parsing • Faithfulness Grounding • Precise PDF BBox Citations</text>
+    
+    <!-- Status Pill -->
+    <g transform="translate(1340, 5)">
+      <rect width="140" height="28" rx="14" fill="#1E293B" stroke="#334155" stroke-width="1" />
+      <circle cx="16" cy="14" r="4" fill="#22C55E">
+        <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <text x="28" y="18" font-family="Inter, -apple-system, sans-serif" font-weight="600" font-size="11" fill="#E2E8F0">LIVE PIPELINE</text>
+    </g>
+  </g>
+
+  <!-- Divider Line under header -->
+  <line x1="60" y1="115" x2="1540" y2="115" stroke="#1E293B" stroke-width="1.5" />
+
+  <!-- 3. CONNECTING PIPELINE GUIDES (BACKGROUND BUS LINES) -->
+  <!-- Main Stream Line Left to Right -->
+  <path d="M 210 460 L 260 460 M 410 460 L 460 460 M 610 460 L 660 460 M 790 460 L 830 330 M 790 460 L 830 590 M 1000 330 L 1040 460 M 1000 590 L 1040 460 M 1170 460 L 1220 460 M 1350 460 L 1390 460" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="4 4" />
+
+  <!-- Moving Data Packets on Guides -->
+  <!-- Packet 1: Documents -> Parsing -->
+  <circle cx="210" cy="460" r="4" fill="#60A5FA">
+    <animate attributeName="cx" values="210;260" dur="2.5s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Packet 2: Parsing -> Chunking -->
+  <circle cx="410" cy="460" r="4" fill="#60A5FA">
+    <animate attributeName="cx" values="410;460" dur="2.5s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Packet 3: Chunking -> Vectorizer -->
+  <circle cx="610" cy="460" r="4" fill="#60A5FA">
+    <animate attributeName="cx" values="610;660" dur="2.5s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Packet 4: Dense Vector Path (Top) -->
+  <circle cx="790" cy="460" r="4" fill="#3B82F6">
+    <animate attributeName="cx" values="790;830" dur="1.5s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="460;330" dur="1.5s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="830" cy="330" r="4" fill="#3B82F6">
+    <animate attributeName="cx" values="830;1000" dur="2.5s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="1000" cy="330" r="4" fill="#3B82F6">
+    <animate attributeName="cx" values="1000;1040" dur="1.5s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="330;460" dur="1.5s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Packet 5: Sparse BM25 Path (Bottom) -->
+  <circle cx="790" cy="460" r="4" fill="#F59E0B">
+    <animate attributeName="cx" values="790;830" dur="1.5s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="460;590" dur="1.5s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="830" cy="590" r="4" fill="#F59E0B">
+    <animate attributeName="cx" values="830;1000" dur="2.5s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="1000" cy="590" r="4" fill="#F59E0B">
+    <animate attributeName="cx" values="1000;1040" dur="1.5s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="590;460" dur="1.5s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Packet 6: Fusion -> Reranker -> LLM -->
+  <circle cx="1170" cy="460" r="4" fill="#8B5CF6">
+    <animate attributeName="cx" values="1170;1220" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="1350" cy="460" r="4" fill="#22C55E">
+    <animate attributeName="cx" values="1350;1390" dur="2s" repeatCount="indefinite" />
+  </circle>
+
+
+  <!-- ========================================================================= -->
+  <!-- 4. PIPELINE NODES & STAGES -->
+  <!-- ========================================================================= -->
+
+  <!-- STAGE 1: INGESTED DOCUMENTS (X: 60, Y: 180) -->
+  <g transform="translate(60, 160)" filter="url(#shadow)">
+    <rect width="150" height="600" rx="12" fill="#111827" stroke="#334155" stroke-width="1.5" />
+    
+    <!-- Stage Header -->
+    <rect width="150" height="42" rx="12" fill="#1E293B" />
+    <text x="16" y="26" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F8FAFC">1. DOCUMENTS</text>
+    <text x="16" y="58" font-family="Inter, -apple-system, sans-serif" font-weight="500" font-size="10" fill="#60A5FA">Multi-Format Input</text>
+
+    <!-- Animated Sliding Document Stack -->
+    <g transform="translate(15, 80)">
+      <!-- Sliding Container Animation -->
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0,0; 0,15; 0,0" dur="4s" repeatCount="indefinite" />
+        
+        <!-- PDF File Card -->
+        <g transform="translate(0, 0)">
+          <rect width="120" height="75" rx="8" fill="#1E293B" stroke="#38BDF8" stroke-width="1" />
+          <rect x="10" y="10" width="30" height="16" rx="4" fill="#0284C7" />
+          <text x="17" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="9" fill="#FFFFFF">PDF</text>
+          <text x="46" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="600" font-size="10" fill="#E2E8F0">Manual.pdf</text>
+          <line x1="10" y1="38" x2="110" y2="38" stroke="#334155" stroke-width="1" />
+          <line x1="10" y1="48" x2="90" y2="48" stroke="#334155" stroke-width="1" />
+          <line x1="10" y1="58" x2="70" y2="58" stroke="#334155" stroke-width="1" />
+        </g>
+
+        <!-- DOCX File Card -->
+        <g transform="translate(0, 90)">
+          <rect width="120" height="75" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1" />
+          <rect x="10" y="10" width="36" height="16" rx="4" fill="#2563EB" />
+          <text x="14" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="9" fill="#FFFFFF">DOCX</text>
+          <text x="52" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="600" font-size="10" fill="#E2E8F0">Spec.docx</text>
+          <line x1="10" y1="38" x2="110" y2="38" stroke="#334155" stroke-width="1" />
+          <line x1="10" y1="48" x2="95" y2="48" stroke="#334155" stroke-width="1" />
+        </g>
+
+        <!-- XLSX File Card -->
+        <g transform="translate(0, 180)">
+          <rect width="120" height="75" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1" />
+          <rect x="10" y="10" width="34" height="16" rx="4" fill="#16A34A" />
+          <text x="14" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="9" fill="#FFFFFF">XLSX</text>
+          <text x="50" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="600" font-size="10" fill="#E2E8F0">Data.xlsx</text>
+          <!-- Grid representation -->
+          <rect x="10" y="36" width="100" height="28" fill="#0F172A" rx="4" stroke="#334155" stroke-width="0.5" />
+          <line x1="43" y1="36" x2="43" y2="64" stroke="#334155" stroke-width="0.5" />
+          <line x1="76" y1="36" x2="76" y2="64" stroke="#334155" stroke-width="0.5" />
+        </g>
+
+        <!-- CSV File Card -->
+        <g transform="translate(0, 270)">
+          <rect width="120" height="75" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1" />
+          <rect x="10" y="10" width="30" height="16" rx="4" fill="#D97706" />
+          <text x="16" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="9" fill="#FFFFFF">CSV</text>
+          <text x="46" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="600" font-size="10" fill="#E2E8F0">Rates.csv</text>
+          <line x1="10" y1="38" x2="110" y2="38" stroke="#334155" stroke-width="1" />
+          <line x1="10" y1="48" x2="80" y2="48" stroke="#334155" stroke-width="1" />
+        </g>
+
+        <!-- Image OCR Card -->
+        <g transform="translate(0, 360)">
+          <rect width="120" height="75" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1" />
+          <rect x="10" y="10" width="42" height="16" rx="4" fill="#9333EA" />
+          <text x="14" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="9" fill="#FFFFFF">IMAGE</text>
+          <text x="58" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="600" font-size="10" fill="#E2E8F0">Scan.png</text>
+          <text x="10" y="48" font-family="Inter, -apple-system, sans-serif" font-weight="500" font-size="9" fill="#A855F7">OCR Active</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+
+  <!-- STAGE 2: INTELLIGENT PARSING (X: 260, Y: 160) -->
+  <g transform="translate(260, 160)" filter="url(#shadow)">
+    <rect width="150" height="600" rx="12" fill="#111827" stroke="#334155" stroke-width="1.5" />
+    
+    <rect width="150" height="42" rx="12" fill="#1E293B" />
+    <text x="16" y="26" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F8FAFC">2. PARSING</text>
+    <text x="16" y="58" font-family="Inter, -apple-system, sans-serif" font-weight="500" font-size="10" fill="#60A5FA">Layout &amp; OCR Engine</text>
+
+    <!-- Sub-modules -->
+    <g transform="translate(15, 80)">
+      <!-- Module 1: Native Extraction -->
+      <rect width="120" height="150" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1" />
+      <text x="12" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#E2E8F0">Native Extraction</text>
+      <text x="12" y="38" font-family="Inter, -apple-system, sans-serif" font-weight="400" font-size="9" fill="#94A3B8">PyMuPDF / docx</text>
+
+      <!-- Scanning beam animation -->
+      <rect x="10" y="50" width="100" height="85" fill="#0F172A" rx="6" />
+      <line x1="15" y1="65" x2="95" y2="65" stroke="#38BDF8" stroke-width="1.5">
+        <animate attributeName="y1" values="60;125;60" dur="3s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="60;125;60" dur="3s" repeatCount="indefinite" />
+      </line>
+      <text x="20" y="80" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#64748B">Text Streams</text>
+      <text x="20" y="96" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#64748B">Font Styles</text>
+      <text x="20" y="112" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#64748B">Table Grid</text>
+
+      <!-- Module 2: OCR Fallback -->
+      <g transform="translate(0, 170)">
+        <rect width="120" height="150" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1" />
+        <text x="12" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#E2E8F0">Tesseract OCR</text>
+        <text x="12" y="38" font-family="Inter, -apple-system, sans-serif" font-weight="400" font-size="9" fill="#94A3B8">Fallback Engine</text>
+
+        <rect x="10" y="50" width="100" height="85" fill="#0F172A" rx="6" />
+        <!-- Bounding Boxes animation -->
+        <rect x="20" y="62" width="40" height="14" fill="none" stroke="#F59E0B" stroke-width="1">
+          <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
+        </rect>
+        <rect x="65" y="62" width="30" height="14" fill="none" stroke="#F59E0B" stroke-width="1">
+          <animate attributeName="stroke-opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite" />
+        </rect>
+        <rect x="20" y="82" width="75" height="14" fill="none" stroke="#38BDF8" stroke-width="1">
+          <animate attributeName="stroke-opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
+        </rect>
+        <text x="20" y="118" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#F59E0B">BBox Extraction</text>
+      </g>
+
+      <!-- Standardized Output Schema -->
+      <g transform="translate(0, 340)">
+        <rect width="120" height="100" rx="8" fill="#1E293B" stroke="#3B82F6" stroke-width="1" />
+        <text x="12" y="22" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="10" fill="#60A5FA">Document()</text>
+        <text x="12" y="40" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#94A3B8">• text</text>
+        <text x="12" y="54" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#94A3B8">• metadata</text>
+        <text x="12" y="68" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#94A3B8">• pages[]</text>
+        <text x="12" y="82" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#94A3B8">• blocks[]</text>
+      </g>
+    </g>
+  </g>
+
+
+  <!-- STAGE 3: ADAPTIVE CHUNKING (X: 460, Y: 160) -->
+  <g transform="translate(460, 160)" filter="url(#shadow)">
+    <rect width="150" height="600" rx="12" fill="#111827" stroke="#334155" stroke-width="1.5" />
+    
+    <rect width="150" height="42" rx="12" fill="#1E293B" />
+    <text x="16" y="26" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F8FAFC">3. CHUNKING</text>
+    <text x="16" y="58" font-family="Inter, -apple-system, sans-serif" font-weight="500" font-size="10" fill="#60A5FA">Adaptive Hierarchy</text>
+
+    <!-- Chunking Breakdown Visual -->
+    <g transform="translate(15, 80)">
+      <!-- Hierarchy Labels -->
+      <rect width="120" height="110" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1" />
+      <text x="12" y="20" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="10" fill="#E2E8F0">Structural Hierarchy</text>
+      
+      <text x="12" y="40" font-family="Inter, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#38BDF8">Heading</text>
+      <text x="22" y="55" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#94A3B8">↳ Section</text>
+      <text x="36" y="70" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#94A3B8">↳ Paragraph</text>
+      <text x="48" y="85" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#94A3B8">↳ Sentence</text>
+
+      <!-- Animated Splitting Chunks -->
+      <g transform="translate(0, 130)">
+        <text x="0" y="0" font-family="Inter, -apple-system, sans-serif" font-weight="600" font-size="10" fill="#94A3B8">Splitting Animation:</text>
+
+        <!-- Chunk 1 -->
+        <g transform="translate(0, 15)">
+          <animateTransform attributeName="transform" type="translate" values="0,15; 0,10; 0,15" dur="3s" repeatCount="indefinite" />
+          <rect width="120" height="60" rx="6" fill="#1E293B" stroke="#38BDF8" stroke-width="1" />
+          <text x="10" y="18" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="9" fill="#38BDF8">CHUNK #1 [Heading]</text>
+          <text x="10" y="34" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#94A3B8">Warranty Coverage Terms</text>
+          <text x="10" y="46" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#64748B">Page 21 • Para ID: p21_b2</text>
+        </g>
+
+        <!-- Chunk 2 (Table preserved whole) -->
+        <g transform="translate(0, 85)">
+          <animateTransform attributeName="transform" type="translate" values="0,85; 0,92; 0,85" dur="3s" repeatCount="indefinite" />
+          <rect width="120" height="65" rx="6" fill="#1E293B" stroke="#10B981" stroke-width="1" />
+          <text x="10" y="18" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="9" fill="#10B981">CHUNK #2 [Table Intact]</text>
+          <rect x="10" y="26" width="100" height="28" fill="#0F172A" rx="4" stroke="#334155" stroke-width="0.5" />
+          <text x="15" y="42" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#E2E8F0">Preserved Table Data</text>
+        </g>
+
+        <!-- Chunk 3 -->
+        <g transform="translate(0, 160)">
+          <animateTransform attributeName="transform" type="translate" values="0,160; 0,170; 0,160" dur="3s" repeatCount="indefinite" />
+          <rect width="120" height="60" rx="6" fill="#1E293B" stroke="#38BDF8" stroke-width="1" />
+          <text x="10" y="18" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="9" fill="#38BDF8">CHUNK #3 [Paragraph]</text>
+          <text x="10" y="34" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#94A3B8">ISO-9001 Specs</text>
+          <text x="10" y="46" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#64748B">Page 22 • Para ID: p22_b1</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+
+  <!-- STAGE 4: EMBEDDINGS (X: 660, Y: 160) -->
+  <g transform="translate(660, 160)" filter="url(#shadow)">
+    <rect width="130" height="600" rx="12" fill="#111827" stroke="#334155" stroke-width="1.5" />
+    
+    <rect width="130" height="42" rx="12" fill="#1E293B" />
+    <text x="14" y="26" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#F8FAFC">4. EMBEDDINGS</text>
+    <text x="14" y="58" font-family="Inter, -apple-system, sans-serif" font-weight="500" font-size="10" fill="#60A5FA">BAAI BGE Model</text>
+
+    <g transform="translate(15, 90)">
+      <!-- Dense Vector Representation -->
+      <rect width="100" height="460" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1" />
+      
+      <text x="10" y="25" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="10" fill="#8B5CF6">Vector Space</text>
+      <text x="10" y="40" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#64748B">1024-Dim Float32</text>
+
+      <!-- Floating particle vectors -->
+      <g transform="translate(15, 60)">
+        <!-- Vector Group 1 -->
+        <g>
+          <animateTransform attributeName="transform" type="translate" values="0,0; 0,-15; 0,0" dur="4s" repeatCount="indefinite" />
+          <circle cx="20" cy="40" r="4" fill="#3B82F6" />
+          <text x="30" y="43" font-family="Courier, monospace" font-size="8" fill="#94A3B8">[0.82, -0.41]</text>
+        </g>
+
+        <!-- Vector Group 2 -->
+        <g transform="translate(0, 80)">
+          <animateTransform attributeName="transform" type="translate" values="0,0; 0,15; 0,0" dur="5s" repeatCount="indefinite" />
+          <circle cx="20" cy="40" r="4" fill="#8B5CF6" />
+          <text x="30" y="43" font-family="Courier, monospace" font-size="8" fill="#94A3B8">[0.19, 0.95]</text>
+        </g>
+
+        <!-- Vector Group 3 -->
+        <g transform="translate(0, 160)">
+          <animateTransform attributeName="transform" type="translate" values="0,0; 0,-10; 0,0" dur="3.5s" repeatCount="indefinite" />
+          <circle cx="20" cy="40" r="4" fill="#60A5FA" />
+          <text x="30" y="43" font-family="Courier, monospace" font-size="8" fill="#94A3B8">[-0.73, 0.12]</text>
+        </g>
+
+        <!-- Vector Group 4 -->
+        <g transform="translate(0, 240)">
+          <animateTransform attributeName="transform" type="translate" values="0,0; 0,12; 0,0" dur="4.5s" repeatCount="indefinite" />
+          <circle cx="20" cy="40" r="4" fill="#10B981" />
+          <text x="30" y="43" font-family="Courier, monospace" font-size="8" fill="#94A3B8">[0.44, -0.88]</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+
+  <!-- STAGE 5: HYBRID SEARCH (X: 830, Y: 220 TOP & Y: 480 BOTTOM) -->
+  <!-- 5A. Top Path: FAISS Dense Search -->
+  <g transform="translate(830, 220)" filter="url(#shadow)">
+    <rect width="170" height="200" rx="12" fill="#111827" stroke="#3B82F6" stroke-width="1.5" />
+    <rect width="170" height="36" rx="12" fill="#1E293B" />
+    <text x="14" y="23" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#60A5FA">DENSE VECTOR SEARCH</text>
+    <text x="14" y="54" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F8FAFC">FAISS Index</text>
+    <text x="14" y="70" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#94A3B8">Semantic Similarity L2</text>
+    
+    <rect x="14" y="85" width="142" height="95" fill="#0F172A" rx="8" stroke="#334155" stroke-width="1" />
+    <text x="24" y="105" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#64748B">Top-K Candidate Retrievals</text>
+
+    <!-- Animated Dense Nodes -->
+    <circle cx="35" cy="130" r="6" fill="#3B82F6" />
+    <line x1="35" y1="130" x2="85" y2="140" stroke="#3B82F6" stroke-width="1" />
+    <circle cx="85" cy="140" r="8" fill="#60A5FA">
+      <animate attributeName="r" values="6;9;6" dur="2s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="130" cy="125" r="5" fill="#3B82F6" />
+    <text x="24" y="166" font-family="Inter, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#38BDF8">Dense Score: 0.942</text>
+  </g>
+
+  <!-- 5B. Bottom Path: BM25 Sparse Search -->
+  <g transform="translate(830, 480)" filter="url(#shadow)">
+    <rect width="170" height="200" rx="12" fill="#111827" stroke="#F59E0B" stroke-width="1.5" />
+    <rect width="170" height="36" rx="12" fill="#1E293B" />
+    <text x="14" y="23" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FBBF24">SPARSE KEYWORD SEARCH</text>
+    <text x="14" y="54" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F8FAFC">BM25 Okapi</text>
+    <text x="14" y="70" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#94A3B8">Exact Serial/Term Frequency</text>
+    
+    <rect x="14" y="85" width="142" height="95" fill="#0F172A" rx="8" stroke="#334155" stroke-width="1" />
+    <text x="24" y="105" font-family="Inter, -apple-system, sans-serif" font-size="9" fill="#64748B">Term Inverted Index</text>
+
+    <!-- Animated Keyword Term Tokens -->
+    <rect x="24" y="118" width="55" height="18" rx="4" fill="#D97706" />
+    <text x="28" y="130" font-family="Courier, monospace" font-size="8" fill="#FFFFFF">"warranty"</text>
+    
+    <rect x="85" y="118" width="60" height="18" rx="4" fill="#1E293B" stroke="#F59E0B" stroke-width="1" />
+    <text x="89" y="130" font-family="Courier, monospace" font-size="8" fill="#FBBF24">"ISO-9001"</text>
+    <text x="24" y="166" font-family="Inter, -apple-system, sans-serif" font-size="9" font-weight="600" fill="#FBBF24">BM25 Score: 12.84</text>
+  </g>
+
+
+  <!-- STAGE 6: RANK FUSION (X: 1040, Y: 360) -->
+  <g transform="translate(1040, 360)" filter="url(#shadow)">
+    <rect width="130" height="200" rx="12" fill="#111827" stroke="#8B5CF6" stroke-width="1.5" />
+    <rect width="130" height="36" rx="12" fill="#1E293B" />
+    <text x="12" y="23" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#C084FC">6. RANK FUSION</text>
+
+    <text x="12" y="55" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F8FAFC">RRF Engine</text>
+    <text x="12" y="70" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#94A3B8">Reciprocal Rank</text>
+
+    <rect x="12" y="85" width="106" height="95" fill="#0F172A" rx="8" stroke="#334155" stroke-width="1" />
+    <text x="20" y="105" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#A78BFA">Score Combination</text>
+    
+    <!-- Pulse merging visual -->
+    <circle cx="65" cy="135" r="16" fill="#8B5CF6" opacity="0.2">
+      <animate attributeName="r" values="10;22;10" dur="2.5s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="65" cy="135" r="10" fill="#8B5CF6" />
+    <text x="35" y="170" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#E2E8F0">Top 30 Candidates</text>
+  </g>
+
+
+  <!-- STAGE 7: CROSS ENCODER RERANKER (X: 1190, Y: 360) -->
+  <g transform="translate(1190, 360)" filter="url(#shadow)">
+    <rect width="130" height="200" rx="12" fill="#111827" stroke="#10B981" stroke-width="1.5" />
+    <rect width="130" height="36" rx="12" fill="#1E293B" />
+    <text x="12" y="23" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#34D399">7. RERANKER</text>
+
+    <text x="12" y="55" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#F8FAFC">Cross-Encoder</text>
+    <text x="12" y="70" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#34D399">Top 30 ➔ Top 5</text>
+
+    <g transform="translate(10, 85)">
+      <!-- Kept Highlighted Chunk -->
+      <rect width="110" height="26" rx="4" fill="#064E3B" stroke="#10B981" stroke-width="1" />
+      <text x="8" y="16" font-family="Inter, -apple-system, sans-serif" font-size="8" font-weight="700" fill="#A7F3D0">#1 Relevant Chunk</text>
+
+      <!-- Faded Irrelevant Chunk -->
+      <rect y="32" width="110" height="22" rx="4" fill="#1E293B" stroke="#334155" stroke-width="1" opacity="0.3">
+        <animate attributeName="opacity" values="0.4;0.1;0.4" dur="3s" repeatCount="indefinite" />
+      </rect>
+      <text x="8" y="46" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#64748B">[Faded Irrelevant]</text>
+
+      <!-- Kept Highlighted Chunk 2 -->
+      <rect y="60" width="110" height="26" rx="4" fill="#064E3B" stroke="#10B981" stroke-width="1" />
+      <text x="8" y="76" font-family="Inter, -apple-system, sans-serif" font-size="8" font-weight="700" fill="#A7F3D0">#2 Relevant Chunk</text>
+    </g>
+  </g>
+
+
+  <!-- STAGE 8: LLM ENGINE (X: 1340, Y: 360) -->
+  <g transform="translate(1340, 360)" filter="url(#shadow)">
+    <rect width="100" height="200" rx="12" fill="#111827" stroke="#38BDF8" stroke-width="1.5" />
+    <rect width="100" height="36" rx="12" fill="#1E293B" />
+    <text x="12" y="23" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#38BDF8">8. LLM</text>
+
+    <text x="10" y="55" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="10" fill="#F8FAFC">NVIDIA NIM</text>
+    <text x="10" y="68" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#60A5FA">Primary LLM</text>
+    <text x="10" y="82" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#F59E0B">Groq Fallback</text>
+
+    <!-- Pulsing Neural Node Visual -->
+    <g transform="translate(50, 135)">
+      <circle cx="0" cy="0" r="22" fill="#0284C7" opacity="0.2">
+        <animate attributeName="r" values="16;28;16" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="0" cy="0" r="14" fill="#0284C7" />
+      <text x="0" y="4" font-family="Inter, -apple-system, sans-serif" font-weight="800" font-size="9" fill="#FFFFFF" text-anchor="middle">AI</text>
+    </g>
+  </g>
+
+
+  <!-- ========================================================================= -->
+  <!-- STAGE 9: GROUNDED RESPONSE & CITATIONS (X: 1460, Y: 160) -->
+  <!-- ========================================================================= -->
+  <g transform="translate(1460, 160)" filter="url(#shadow)">
+    <rect width="120" height="600" rx="12" fill="#111827" stroke="#22C55E" stroke-width="1.5" />
+    
+    <rect width="120" height="42" rx="12" fill="#1E293B" />
+    <text x="10" y="24" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#4ADE80">9. RESPONSE</text>
+    <text x="10" y="58" font-family="Inter, -apple-system, sans-serif" font-weight="500" font-size="9" fill="#22C55E">Faithful &amp; Cited</text>
+
+    <!-- Response Card Content -->
+    <g transform="translate(8, 80)">
+      <!-- Faithfulness Status Pill -->
+      <rect width="104" height="20" rx="10" fill="#064E3B" stroke="#22C55E" stroke-width="1" />
+      <text x="16" y="13" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="8" fill="#4ADE80">✓ FAITHFUL</text>
+
+      <!-- Answer Box -->
+      <rect y="28" width="104" height="150" rx="6" fill="#0F172A" stroke="#334155" stroke-width="1" />
+      <text x="8" y="44" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="9" fill="#E2E8F0">Grounded Answer</text>
+      
+      <text x="8" y="60" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#94A3B8">"Standard system</text>
+      <text x="8" y="72" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#94A3B8">warranty covers 5</text>
+      <text x="8" y="84" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#94A3B8">years full replacement</text>
+      <text x="8" y="96" font-family="Inter, -apple-system, sans-serif" font-size="8" fill="#94A3B8">under ISO-9001."</text>
+
+      <!-- Citation 1 Pill -->
+      <g transform="translate(0, 190)">
+        <rect width="104" height="34" rx="6" fill="#1E293B" stroke="#38BDF8" stroke-width="1" />
+        <text x="6" y="14" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="8" fill="#38BDF8">Citation #1</text>
+        <text x="6" y="26" font-family="Inter, -apple-system, sans-serif" font-size="7" fill="#E2E8F0">Manual.pdf | p.21</text>
+      </g>
+
+      <!-- Citation 2 Pill -->
+      <g transform="translate(0, 230)">
+        <rect width="104" height="34" rx="6" fill="#1E293B" stroke="#38BDF8" stroke-width="1" />
+        <text x="6" y="14" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="8" fill="#38BDF8">Citation #2</text>
+        <text x="6" y="26" font-family="Inter, -apple-system, sans-serif" font-size="7" fill="#E2E8F0">Spec.docx | p.5</text>
+      </g>
+
+      <!-- Citation 3 Pill -->
+      <g transform="translate(0, 270)">
+        <rect width="104" height="34" rx="6" fill="#1E293B" stroke="#38BDF8" stroke-width="1" />
+        <text x="6" y="14" font-family="Inter, -apple-system, sans-serif" font-weight="700" font-size="8" fill="#38BDF8">Citation #3</text>
+        <text x="6" y="26" font-family="Inter, -apple-system, sans-serif" font-size="7" fill="#E2E8F0">Data.xlsx | Sheet 1</text>
+      </g>
+    </g>
+  </g>
+
+
+  <!-- ========================================================================= -->
+  <!-- 5. CITATION CONNECTING BACK-PROPAGATION LINES -->
+  <!-- Animated arcs linking citations back to the input documents -->
+  <!-- ========================================================================= -->
+  <path d="M 1460 480 Q 800 860 210 260" fill="none" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.6">
+    <animate attributeName="stroke-dashoffset" values="100;0" dur="4s" repeatCount="indefinite" />
+  </path>
+
+</svg>

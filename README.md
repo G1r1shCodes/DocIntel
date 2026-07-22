@@ -35,12 +35,12 @@
 
 ---
 
-## Architecture Diagram
+## Interactive Enterprise Architecture
 
-The high-level architecture decouples document ingestion, hybrid search, AI generation, and interactive citation previewing:
+The end-to-end processing pipeline—from multi-format document ingestion down to grounded answers and citation highlights—is illustrated below in an interactive vector animation:
 
 <p align="center">
-  <img src="./Architecture%20Diagram.png" alt="DocIntel Enterprise Architecture Diagram" width="100%" style="border-radius: 12px; border: 1px solid #334155;" />
+  <img src="./assets/docintel_architecture.svg" alt="DocIntel Enterprise Animated Architecture Pipeline" width="100%" style="border-radius: 12px; border: 1px solid #334155;" />
 </p>
 
 ---
@@ -162,6 +162,8 @@ FastAPI routes enforce Clerk JWT authentication and role-based permissions:
 
 ```
 DocIntel/
+├── assets/
+│   └── docintel_architecture.svg
 ├── Architecture Diagram.png
 ├── README.md
 ├── .env.example
