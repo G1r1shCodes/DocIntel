@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 180" width="100%" height="100%">
+  <defs>
+    <!-- Shimmering Gradient for Title -->
+    <linearGradient id="shimmer-grad" x1="0%" y1="0%" x2="200%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8">
+        <animate attributeName="stop-color" values="#38BDF8;#818CF8;#C084FC;#34D399;#38BDF8" dur="6s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="50%" stop-color="#818CF8">
+        <animate attributeName="stop-color" values="#818CF8;#C084FC;#34D399;#38BDF8;#818CF8" dur="6s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="100%" stop-color="#C084FC">
+        <animate attributeName="stop-color" values="#C084FC;#34D399;#38BDF8;#818CF8;#C084FC" dur="6s" repeatCount="indefinite" />
+      </stop>
+    </linearGradient>
+
+    <!-- Laser Line Gradient -->
+    <linearGradient id="laser-line" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0" />
+      <stop offset="50%" stop-color="#818CF8" stop-opacity="1" />
+      <stop offset="100%" stop-color="#C084FC" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Drop Shadow -->
+    <filter id="glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#38BDF8" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="180" rx="14" fill="#090D16" stroke="#162032" stroke-width="1" />
+
+  <!-- Ambient Glow Orbs -->
+  <circle cx="120" cy="90" r="100" fill="#0284C7" opacity="0.06" filter="blur(40px)" />
+  <circle cx="500" cy="90" r="120" fill="#6366F1" opacity="0.06" filter="blur(50px)" />
+
+  <!-- Brand Mark Icon with Subtle Breathing Animation -->
+  <g transform="translate(60, 50)" filter="url(#glow-filter)">
+    <rect width="52" height="52" rx="12" fill="#0284C7">
+      <animate attributeName="opacity" values="0.9;1;0.9" dur="3s" repeatCount="indefinite" />
+    </rect>
+    <path d="M 15 16 L 37 16 M 15 26 L 37 26 M 15 36 L 27 36" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+  </g>
+
+  <!-- Animated Title Text -->
+  <text x="132" y="88" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" fill="url(#shimmer-grad)" letter-spacing="-0.03em" filter="url(#glow-filter)">DocIntel</text>
+
+  <!-- Subtitle Tagline -->
+  <text x="134" y="116" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="14" fill="#94A3B8" letter-spacing="0.5">Enterprise AI Document Intelligence Engine</text>
+
+  <!-- Animated Laser Stream Underline -->
+  <g transform="translate(132, 130)">
+    <line x1="0" y1="0" x2="800" y2="0" stroke="#1E293B" stroke-width="1.5" />
+    <line x1="0" y1="0" x2="800" y2="0" stroke="url(#laser-line)" stroke-width="2" stroke-dasharray="120 700" stroke-dashoffset="0">
+      <animate attributeName="stroke-dashoffset" values="820;0" dur="2.2s" repeatCount="indefinite" />
+    </line>
+  </g>
+
+  <!-- Live Pulse Dot and Status Badge -->
+  <g transform="translate(840, 48)">
+    <rect width="100" height="26" rx="13" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
+    <circle cx="14" cy="13" r="3.5" fill="#10B981">
+      <animate attributeName="opacity" values="1;0.2;1" dur="1.8s" repeatCount="indefinite" />
+    </circle>
+    <text x="24" y="16" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="9" fill="#94A3B8" letter-spacing="1">ONLINE</text>
+  </g>
+</svg>

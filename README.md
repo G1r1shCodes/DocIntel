@@ -1,8 +1,8 @@
-# DocIntel
+<p align="center">
+  <img src="./assets/docintel_title_animated.svg" alt="DocIntel Animated Title" width="100%" />
+</p>
 
-**Enterprise AI Document Intelligence Platform** • Multi-Format Pipeline • Hybrid RAG • Grounded Citations
-
-<p align="left">
+<p align="center">
   <img src="https://img.shields.io/badge/Platform-DocIntel_v1.0-06b6d4?style=flat-square&logo=hyper&logoColor=white" alt="Platform" />
   <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python" />
   <img src="https://img.shields.io/badge/FastAPI-0.110-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" />
