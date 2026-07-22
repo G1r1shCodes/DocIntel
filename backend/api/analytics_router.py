@@ -3,11 +3,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from database.session import get_db
 from database.models import Document, AnalyticsLog, User, ChatSession, ChatMessage
+from database.schemas import AnalyticsDashboardResponse
 from auth.clerk_auth import require_role
 
 router = APIRouter(prefix="/api/analytics", tags=["Admin Analytics"])
 
-@router.get("/dashboard")
+@router.get("/dashboard", response_model=AnalyticsDashboardResponse)
 def get_admin_dashboard_stats(
     db: Session = Depends(get_db),
     current_user: dict = Depends(require_role(["Admin", "Tender Specialist", "Sales"]))

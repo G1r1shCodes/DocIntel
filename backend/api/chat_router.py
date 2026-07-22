@@ -1,10 +1,13 @@
 import time
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
+from sqlalchemy import func
 from database.session import get_db
 from database.models import ChatSession, ChatMessage, Citation, AnalyticsLog, Document
+from database.schemas import ChatQueryResponse, ChatSessionListResponse, ChatSessionResponse
+from database.crud_helpers import get_or_create_user
 from pipeline.generation import (
     run_guardrails,
     run_query_rewrite,
@@ -21,7 +24,7 @@ class ChatQueryRequest(BaseModel):
     session_id: Optional[int] = None
     query: str
 
-@router.post("/query")
+@router.post("/query", response_model=ChatQueryResponse)
 async def process_chat_query(
     req: ChatQueryRequest,
     db: Session = Depends(get_db),
@@ -37,13 +40,20 @@ async def process_chat_query(
     if not user_query:
         raise HTTPException(status_code=400, detail="Query cannot be empty")
 
-    # 1. Ensure or create Chat Session
+    # 1. Ensure or create Chat Session (scoped to the authenticated user)
+    db_user = get_or_create_user(db, current_user)
     session = None
     if req.session_id:
-        session = db.query(ChatSession).filter(ChatSession.id == req.session_id).first()
+        session = db.query(ChatSession).filter(
+            ChatSession.id == req.session_id,
+            ChatSession.user_id == db_user.id
+        ).first()
 
     if not session:
-        session = ChatSession(title=user_query[:40] + ("..." if len(user_query) > 40 else ""))
+        session = ChatSession(
+            user_id=db_user.id,
+            title=user_query[:40] + ("..." if len(user_query) > 40 else "")
+        )
         db.add(session)
         db.commit()
         db.refresh(session)
@@ -140,6 +150,7 @@ async def process_chat_query(
     citation_objs = []
     for c in citations_data:
         doc = db.query(Document).filter(Document.filename == c["filename"]).first()
+        bbox = c.get("bbox") or {}
         cit = Citation(
             message_id=bot_msg.id,
             document_id=doc.id if doc else None,
@@ -148,10 +159,10 @@ async def process_chat_query(
             heading=c["heading"],
             section=c["section"],
             text_snippet=c["text_snippet"],
-            bbox_x0=c["bbox"]["x0"],
-            bbox_y0=c["bbox"]["y0"],
-            bbox_x1=c["bbox"]["x1"],
-            bbox_y1=c["bbox"]["y1"]
+            bbox_x0=bbox.get("x0"),
+            bbox_y0=bbox.get("y0"),
+            bbox_x1=bbox.get("x1"),
+            bbox_y1=bbox.get("y1")
         )
         db.add(cit)
         citation_objs.append(cit)
@@ -183,25 +194,51 @@ async def process_chat_query(
         "response_time_ms": round(elapsed_ms, 2)
     }
 
-@router.get("/sessions")
-def get_chat_sessions(db: Session = Depends(get_db)):
+@router.get("/sessions", response_model=List[ChatSessionListResponse])
+def get_chat_sessions(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, le=1000),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user_from_token)
+):
     """
-    Returns history of chat sessions.
+    Returns history of chat sessions for the authenticated user.
     """
-    sessions = db.query(ChatSession).order_by(ChatSession.created_at.desc()).all()
+    db_user = get_or_create_user(db, current_user)
+    rows = (
+        db.query(ChatSession, func.count(ChatMessage.id))
+        .outerjoin(ChatMessage, ChatMessage.session_id == ChatSession.id)
+        .filter(ChatSession.user_id == db_user.id)
+        .group_by(ChatSession.id)
+        .order_by(ChatSession.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
     return [{
         "id": s.id,
         "title": s.title,
-        "created_at": s.created_at.isoformat(),
-        "message_count": len(s.messages)
-    } for s in sessions]
+        "created_at": s.created_at,
+        "message_count": count
+    } for s, count in rows]
 
-@router.get("/sessions/{session_id}")
-def get_session_messages(session_id: int, db: Session = Depends(get_db)):
+@router.get("/sessions/{session_id}", response_model=ChatSessionResponse)
+def get_session_messages(
+    session_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user_from_token)
+):
     """
-    Returns all messages and citations for a given chat session.
+    Returns all messages and citations for a given chat session (owner only).
     """
-    session = db.query(ChatSession).filter(ChatSession.id == session_id).first()
+    db_user = get_or_create_user(db, current_user)
+    session = db.query(ChatSession).options(
+        selectinload(ChatSession.messages).selectinload(ChatMessage.citations)
+    ).filter(
+        ChatSession.id == session_id,
+        ChatSession.user_id == db_user.id
+    ).first()
+
     if not session:
         raise HTTPException(status_code=404, detail="Chat session not found")
 
@@ -214,7 +251,7 @@ def get_session_messages(session_id: int, db: Session = Depends(get_db)):
             "heading": c.heading,
             "section": c.section,
             "text_snippet": c.text_snippet,
-            "bbox": {"x0": c.bbox_x0, "y0": c.bbox_y0, "x1": c.bbox_x1, "y1": c.bbox_y1}
+            "bbox": {"x0": c.bbox_x0, "y0": c.bbox_y0, "x1": c.bbox_x1, "y1": c.bbox_y1} if c.bbox_x0 is not None else None
         } for c in msg.citations]
 
         messages.append({
@@ -222,7 +259,7 @@ def get_session_messages(session_id: int, db: Session = Depends(get_db)):
             "role": msg.role,
             "content": msg.content,
             "faithfulness_status": msg.faithfulness_status,
-            "timestamp": msg.timestamp.isoformat(),
+            "timestamp": msg.timestamp,
             "citations": citations
         })
 

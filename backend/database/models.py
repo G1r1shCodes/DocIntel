@@ -84,10 +84,10 @@ class Citation(Base):
     heading = Column(String, nullable=True)
     section = Column(String, nullable=True)
     text_snippet = Column(Text)
-    bbox_x0 = Column(Integer, default=0)
-    bbox_y0 = Column(Integer, default=0)
-    bbox_x1 = Column(Integer, default=0)
-    bbox_y1 = Column(Integer, default=0)
+    bbox_x0 = Column(Float, default=0)
+    bbox_y0 = Column(Float, default=0)
+    bbox_x1 = Column(Float, default=0)
+    bbox_y1 = Column(Float, default=0)
 
     message = relationship("ChatMessage", back_populates="citations")
 
