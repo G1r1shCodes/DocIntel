@@ -1,233 +1,234 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
   <defs>
-    <!-- Background Grid Pattern -->
+    <!-- Background Blueprint Grid -->
     <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1E293B" stroke-width="0.75" stroke-opacity="0.5" />
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#161F33" stroke-width="0.75" />
     </pattern>
 
     <!-- Card Background Gradient -->
-    <linearGradient id="card-bg" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#1E293B" stop-opacity="0.7" />
-      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+    <linearGradient id="card-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#131C2E" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0B101D" stop-opacity="0.95" />
     </linearGradient>
 
-    <!-- Header Gradient Text -->
-    <linearGradient id="title-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+    <!-- Header Gradient -->
+    <linearGradient id="title-grad" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#38BDF8" />
       <stop offset="50%" stop-color="#818CF8" />
       <stop offset="100%" stop-color="#C084FC" />
     </linearGradient>
 
-    <!-- Subtle Card Shadow -->
-    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.5" />
+    <!-- Card Drop Shadow -->
+    <filter id="glow-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6" />
     </filter>
   </defs>
 
-  <!-- 1. CANVAS & BACKGROUND -->
+  <!-- 1. BACKGROUND -->
   <rect width="1600" height="900" fill="#080C14" />
   <rect width="1600" height="900" fill="url(#grid-pattern)" />
 
   <!-- Ambient Glow Orbs -->
-  <circle cx="200" cy="200" r="250" fill="#0284C7" opacity="0.06" filter="blur(60px)" />
-  <circle cx="800" cy="450" r="300" fill="#6366F1" opacity="0.05" filter="blur(80px)" />
-  <circle cx="1400" cy="700" r="250" fill="#10B981" opacity="0.06" filter="blur(60px)" />
+  <circle cx="200" cy="200" r="300" fill="#0284C7" opacity="0.04" filter="blur(70px)" />
+  <circle cx="800" cy="450" r="350" fill="#6366F1" opacity="0.04" filter="blur(90px)" />
+  <circle cx="1400" cy="700" r="300" fill="#10B981" opacity="0.04" filter="blur(70px)" />
 
-  <!-- 2. HEADER BAR -->
+  <!-- 2. MINIMALIST HEADER BAR -->
   <g transform="translate(60, 45)">
-    <rect width="42" height="42" rx="10" fill="#0284C7" />
-    <path d="M 13 14 L 29 14 M 13 21 L 29 21 M 13 28 L 22 28" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+    <!-- Logo Icon -->
+    <rect width="40" height="40" rx="10" fill="#0284C7" />
+    <path d="M 12 14 L 28 14 M 12 20 L 28 20 M 12 26 L 21 26" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
     
-    <text x="56" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="26" fill="url(#title-gradient)" letter-spacing="-0.5">DocIntel Platform</text>
-    <text x="56" y="44" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="13" fill="#94A3B8">Enterprise AI Document Intelligence Architecture • Multi-Format Hybrid RAG Engine</text>
+    <!-- Title & Subtitle -->
+    <text x="54" y="25" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="24" fill="url(#title-grad)" letter-spacing="-0.5">DocIntel</text>
+    <text x="54" y="42" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="12" fill="#64748B">Enterprise AI Document Intelligence Engine • Hybrid RAG Pipeline</text>
 
-    <g transform="translate(1320, 8)">
-      <rect width="160" height="32" rx="16" fill="#0F172A" stroke="#334155" stroke-width="1" />
-      <circle cx="18" cy="16" r="4" fill="#10B981">
+    <!-- Top Right Live Status -->
+    <g transform="translate(1340, 8)">
+      <rect width="140" height="28" rx="14" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
+      <circle cx="16" cy="14" r="4" fill="#10B981">
         <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
       </circle>
-      <text x="32" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="11" fill="#CBD5E1">PIPELINE ACTIVE</text>
+      <text x="28" y="18" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="10" fill="#94A3B8" letter-spacing="1">ENGINE ACTIVE</text>
     </g>
   </g>
 
-  <!-- Divider Line -->
-  <line x1="60" y1="110" x2="1540" y2="110" stroke="#1E293B" stroke-width="1" />
+  <line x1="60" y1="110" x2="1540" y2="110" stroke="#162032" stroke-width="1" />
 
-  <!-- 3. CONNECTING LASER PIPELINE FLOWS -->
-  <g stroke-width="2" fill="none">
-    <path d="M 320 460 L 360 460" stroke="#334155" />
-    <path d="M 320 460 L 360 460" stroke="#38BDF8" stroke-dasharray="15 150" stroke-dashoffset="0">
-      <animate attributeName="stroke-dashoffset" values="165;0" dur="1.5s" repeatCount="indefinite" />
+  <!-- 3. ELEGANT PIPELINE LASER CONNECTORS -->
+  <g stroke-width="1.5" fill="none">
+    <!-- Stage 1 -> Stage 2 -->
+    <path d="M 320 460 L 360 460" stroke="#1E293D" />
+    <path d="M 320 460 L 360 460" stroke="#38BDF8" stroke-dasharray="10 120" stroke-dashoffset="0">
+      <animate attributeName="stroke-dashoffset" values="130;0" dur="1.8s" repeatCount="indefinite" />
     </path>
 
-    <path d="M 620 460 L 660 460" stroke="#334155" />
-    <path d="M 620 460 L 660 460" stroke="#818CF8" stroke-dasharray="15 150" stroke-dashoffset="0">
-      <animate attributeName="stroke-dashoffset" values="165;0" dur="1.5s" repeatCount="indefinite" />
+    <!-- Stage 2 -> Stage 3 -->
+    <path d="M 620 460 L 660 460" stroke="#1E293D" />
+    <path d="M 620 460 L 660 460" stroke="#818CF8" stroke-dasharray="10 120" stroke-dashoffset="0">
+      <animate attributeName="stroke-dashoffset" values="130;0" dur="1.8s" repeatCount="indefinite" />
     </path>
 
-    <path d="M 960 460 L 1000 460" stroke="#334155" />
-    <path d="M 960 460 L 1000 460" stroke="#C084FC" stroke-dasharray="15 150" stroke-dashoffset="0">
-      <animate attributeName="stroke-dashoffset" values="165;0" dur="1.5s" repeatCount="indefinite" />
+    <!-- Stage 3 -> Stage 4 -->
+    <path d="M 960 460 L 1000 460" stroke="#1E293D" />
+    <path d="M 960 460 L 1000 460" stroke="#C084FC" stroke-dasharray="10 120" stroke-dashoffset="0">
+      <animate attributeName="stroke-dashoffset" values="130;0" dur="1.8s" repeatCount="indefinite" />
     </path>
 
-    <path d="M 1260 460 L 1300 460" stroke="#334155" />
-    <path d="M 1260 460 L 1300 460" stroke="#34D399" stroke-dasharray="15 150" stroke-dashoffset="0">
-      <animate attributeName="stroke-dashoffset" values="165;0" dur="1.5s" repeatCount="indefinite" />
+    <!-- Stage 4 -> Stage 5 -->
+    <path d="M 1260 460 L 1300 460" stroke="#1E293D" />
+    <path d="M 1260 460 L 1300 460" stroke="#34D399" stroke-dasharray="10 120" stroke-dashoffset="0">
+      <animate attributeName="stroke-dashoffset" values="130;0" dur="1.8s" repeatCount="indefinite" />
     </path>
 
-    <path d="M 1420 740 C 1420 840, 190 840, 190 740" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="6 6" opacity="0.4">
-      <animate attributeName="stroke-dashoffset" values="100;0" dur="5s" repeatCount="indefinite" />
+    <!-- Citation Return Feedback Arc -->
+    <path d="M 1420 740 C 1420 830, 190 830, 190 740" stroke="#38BDF8" stroke-width="1.2" stroke-dasharray="4 6" opacity="0.35">
+      <animate attributeName="stroke-dashoffset" values="80;0" dur="4s" repeatCount="indefinite" />
     </path>
   </g>
 
-  <!-- 4. FIVE MAIN STAGE CONTAINERS -->
+  <!-- 4. FIVE SLEEK STAGE CARDS -->
   <!-- STAGE 1: INGESTION -->
-  <g transform="translate(60, 140)" filter="url(#card-shadow)">
-    <rect width="260" height="600" rx="16" fill="url(#card-bg)" stroke="#334155" stroke-width="1" />
-    <rect width="260" height="50" rx="16" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-    <text x="20" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#38BDF8" letter-spacing="1">01. INGESTION</text>
-    <text x="160" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="11" fill="#64748B">Multi-Format</text>
+  <g transform="translate(60, 140)" filter="url(#glow-shadow)">
+    <rect width="260" height="600" rx="16" fill="url(#card-grad)" stroke="#1E293D" stroke-width="1" />
+    
+    <rect width="260" height="46" rx="16" fill="#0F172A" stroke="#162032" stroke-width="1" />
+    <text x="20" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#38BDF8" letter-spacing="1">01. INGESTION</text>
+
+    <g transform="translate(18, 66)">
+      <g transform="translate(0, 0)">
+        <rect width="224" height="90" rx="10" fill="#0F172A" stroke="#0284C7" stroke-width="1" />
+        <rect x="14" y="14" width="38" height="22" rx="4" fill="#0284C7" />
+        <text x="22" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF">PDF</text>
+        <text x="62" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#F1F5F9">Technical Manuals</text>
+        <text x="14" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">PyMuPDF Native Extraction</text>
+        <text x="14" y="72" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Layout Dict &amp; Font Streams</text>
+      </g>
+      <g transform="translate(0, 102)">
+        <rect width="224" height="90" rx="10" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
+        <rect x="14" y="14" width="44" height="22" rx="4" fill="#2563EB" />
+        <text x="21" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF">DOCX</text>
+        <text x="68" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#F1F5F9">Contracts &amp; Specs</text>
+        <text x="14" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">python-docx Parser</text>
+        <text x="14" y="72" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Structured Headings &amp; Styles</text>
+      </g>
+      <g transform="translate(0, 204)">
+        <rect width="224" height="90" rx="10" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
+        <rect x="14" y="14" width="42" height="22" rx="4" fill="#16A34A" />
+        <text x="21" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF">XLSX</text>
+        <text x="66" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#F1F5F9">Spreadsheets</text>
+        <text x="14" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">openpyxl &amp; pandas</text>
+        <text x="14" y="72" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Multi-Sheet Table Data</text>
+      </g>
+      <g transform="translate(0, 306)">
+        <rect width="224" height="90" rx="10" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
+        <rect x="14" y="14" width="38" height="22" rx="4" fill="#D97706" />
+        <text x="21" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF">CSV</text>
+        <text x="62" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#F1F5F9">Tabular Datasets</text>
+        <text x="14" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">pandas Dataframe</text>
+        <text x="14" y="72" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Header Column Schema</text>
+      </g>
+      <g transform="translate(0, 408)">
+        <rect width="224" height="90" rx="10" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
+        <rect x="14" y="14" width="50" height="22" rx="4" fill="#9333EA" />
+        <text x="21" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF">IMAGE</text>
+        <text x="74" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#F1F5F9">Scanned Files</text>
+        <text x="14" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">Tesseract OCR Engine</text>
+        <text x="14" y="72" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#C084FC">Bounding Boxes (bbox)</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- STAGE 2: PARSE & CHUNK -->
+  <g transform="translate(360, 140)" filter="url(#glow-shadow)">
+    <rect width="260" height="600" rx="16" fill="url(#card-grad)" stroke="#1E293D" stroke-width="1" />
+    <rect width="260" height="46" rx="16" fill="#0F172A" stroke="#162032" stroke-width="1" />
+    <text x="20" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#818CF8" letter-spacing="1">02. PARSE &amp; CHUNK</text>
 
     <g transform="translate(18, 70)">
-      <g transform="translate(0, 0)">
-        <rect width="224" height="85" rx="10" fill="#0F172A" stroke="#0284C7" stroke-width="1" />
-        <rect x="14" y="14" width="40" height="22" rx="4" fill="#0284C7" />
-        <text x="23" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF">PDF</text>
-        <text x="64" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#F1F5F9">Technical Manual</text>
-        <text x="14" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">PyMuPDF Native Text Parser</text>
-        <text x="14" y="69" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Fonts, Layout &amp; Text Dict</text>
-      </g>
-      <g transform="translate(0, 98)">
-        <rect width="224" height="85" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-        <rect x="14" y="14" width="46" height="22" rx="4" fill="#2563EB" />
-        <text x="21" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF">DOCX</text>
-        <text x="70" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#F1F5F9">Specification Doc</text>
-        <text x="14" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">python-docx Parser</text>
-        <text x="14" y="69" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Headings, Styles &amp; Tables</text>
-      </g>
-      <g transform="translate(0, 196)">
-        <rect width="224" height="85" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-        <rect x="14" y="14" width="44" height="22" rx="4" fill="#16A34A" />
-        <text x="21" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF">XLSX</text>
-        <text x="68" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#F1F5F9">Pricing Spreadsheet</text>
-        <text x="14" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">openpyxl &amp; pandas</text>
-        <text x="14" y="69" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Multi-Sheet Markdown Tables</text>
-      </g>
-      <g transform="translate(0, 294)">
-        <rect width="224" height="85" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-        <rect x="14" y="14" width="40" height="22" rx="4" fill="#D97706" />
-        <text x="21" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF">CSV</text>
-        <text x="64" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#F1F5F9">Structured Dataset</text>
-        <text x="14" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">pandas Dataframe</text>
-        <text x="14" y="69" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Header Column Schema</text>
-      </g>
-      <g transform="translate(0, 392)">
-        <rect width="224" height="85" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-        <rect x="14" y="14" width="52" height="22" rx="4" fill="#9333EA" />
-        <text x="21" y="29" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FFFFFF">IMAGE</text>
-        <text x="76" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="13" fill="#F1F5F9">Scanned Diagram</text>
-        <text x="14" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">Tesseract OCR Fallback</text>
-        <text x="14" y="69" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#C084FC">Word Bounding Boxes (bbox)</text>
-      </g>
-    </g>
-  </g>
+      <rect width="224" height="135" rx="10" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
+      <text x="16" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#818CF8">Layout &amp; OCR Engine</text>
+      <text x="16" y="48" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">Standard Document Object</text>
+      
+      <rect x="14" y="58" width="196" height="62" rx="6" fill="#162032" />
+      <text x="24" y="76" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#E2E8F0">• Clean Text Streams</text>
+      <text x="24" y="92" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#E2E8F0">• Metadata &amp; Attributes</text>
+      <text x="24" y="108" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#E2E8F0">• Block Bounding Boxes</text>
 
-  <!-- STAGE 2: PARSING & CHUNKING -->
-  <g transform="translate(360, 140)" filter="url(#card-shadow)">
-    <rect width="260" height="600" rx="16" fill="url(#card-bg)" stroke="#334155" stroke-width="1" />
-    <rect width="260" height="50" rx="16" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-    <text x="20" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#818CF8" letter-spacing="1">02. PARSE &amp; CHUNK</text>
-    <text x="165" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="11" fill="#64748B">Adaptive</text>
+      <g transform="translate(0, 150)">
+        <rect width="224" height="350" rx="10" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
+        <text x="16" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F1F5F9">Adaptive Hierarchy</text>
+        <text x="16" y="44" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748B">Heading ➔ Section ➔ Paragraph</text>
 
-    <g transform="translate(18, 75)">
-      <rect width="224" height="120" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-      <text x="16" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#818CF8">Standard Document Schema</text>
-      <text x="16" y="46" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">DocumentData Container:</text>
-      <text x="24" y="64" font-family="Courier, monospace" font-size="10" fill="#CBD5E1">• text: str (Extracted content)</text>
-      <text x="24" y="80" font-family="Courier, monospace" font-size="10" fill="#CBD5E1">• metadata: dict (Attributes)</text>
-      <text x="24" y="96" font-family="Courier, monospace" font-size="10" fill="#CBD5E1">• pages: List[PageData]</text>
-
-      <g transform="translate(0, 140)">
-        <rect width="224" height="330" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-        <text x="16" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F1F5F9">Adaptive Hierarchy Split</text>
-        <text x="16" y="44" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748B">Heading ➔ Section ➔ Para ➔ Sentence</text>
-
-        <g transform="translate(12, 60)">
-          <rect width="200" height="70" rx="8" fill="#1E293B" stroke="#38BDF8" stroke-width="1" />
-          <text x="12" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#38BDF8">CHUNK #1 [Heading Context]</text>
-          <text x="12" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#E2E8F0">"Warranty Coverage Terms"</text>
-          <text x="12" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Doc: Manual.pdf • Page 21</text>
+        <g transform="translate(12, 58)">
+          <rect width="200" height="75" rx="8" fill="#162032" stroke="#38BDF8" stroke-width="1" />
+          <text x="12" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#38BDF8">CHUNK #1 [Heading]</text>
+          <text x="12" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#E2E8F0">Warranty Terms Context</text>
+          <text x="12" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Manual.pdf • Page 21</text>
         </g>
-        <g transform="translate(12, 145)">
-          <rect width="200" height="75" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1" />
-          <text x="12" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#10B981">CHUNK #2 [Table Preserved]</text>
-          <rect x="12" y="28" width="176" height="22" rx="4" fill="#0F172A" stroke="#334155" stroke-width="1" />
-          <text x="18" y="43" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#A7F3D0">Sheet: Specs | 4 Rows x 5 Cols</text>
-          <text x="12" y="63" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Preserved whole (Never split)</text>
+        <g transform="translate(12, 148)">
+          <rect width="200" height="85" rx="8" fill="#162032" stroke="#10B981" stroke-width="1" />
+          <text x="12" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#10B981">CHUNK #2 [Table Intact]</text>
+          <rect x="12" y="30" width="176" height="24" rx="4" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
+          <text x="18" y="46" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#A7F3D0">Spreadsheet Matrix (Whole)</text>
+          <text x="12" y="70" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Never split across boundaries</text>
         </g>
-        <g transform="translate(12, 235)">
-          <rect width="200" height="70" rx="8" fill="#1E293B" stroke="#1E293B" stroke-width="1" />
-          <text x="12" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#CBD5E1">CHUNK #3 [Paragraph]</text>
-          <text x="12" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">"ISO-9001 Compliance Spec"</text>
-          <text x="12" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Doc: Spec.docx • Page 5</text>
+        <g transform="translate(12, 248)">
+          <rect width="200" height="75" rx="8" fill="#162032" stroke="#162032" stroke-width="1" />
+          <text x="12" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#CBD5E1">CHUNK #3 [Paragraph]</text>
+          <text x="12" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">ISO-9001 Specification</text>
+          <text x="12" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Spec.docx • Page 5</text>
         </g>
       </g>
     </g>
   </g>
 
   <!-- STAGE 3: HYBRID SEARCH -->
-  <g transform="translate(660, 140)" filter="url(#card-shadow)">
-    <rect width="300" height="600" rx="16" fill="url(#card-bg)" stroke="#334155" stroke-width="1" />
-    <rect width="300" height="50" rx="16" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-    <text x="20" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#C084FC" letter-spacing="1">03. HYBRID SEARCH</text>
-    <text x="200" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="11" fill="#64748B">Dense + Sparse</text>
+  <g transform="translate(660, 140)" filter="url(#glow-shadow)">
+    <rect width="300" height="600" rx="16" fill="url(#card-grad)" stroke="#1E293D" stroke-width="1" />
+    <rect width="300" height="46" rx="16" fill="#0F172A" stroke="#162032" stroke-width="1" />
+    <text x="20" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#C084FC" letter-spacing="1">03. HYBRID RETRIEVAL</text>
 
-    <g transform="translate(18, 75)">
+    <g transform="translate(18, 70)">
       <g transform="translate(0, 0)">
-        <rect width="264" height="150" rx="10" fill="#0F172A" stroke="#0284C7" stroke-width="1" />
+        <rect width="264" height="155" rx="10" fill="#0F172A" stroke="#0284C7" stroke-width="1" />
         <text x="16" y="24" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#38BDF8">Dense Vector Search (FAISS)</text>
-        <text x="16" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">Model: BAAI/bge-small-en-v1.5</text>
-        <text x="16" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748B">Index: FlatL2 (1024-Dimension Float32)</text>
+        <text x="16" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">BAAI BGE Embeddings (1024-Dim)</text>
 
-        <rect x="16" y="70" width="232" height="65" rx="6" fill="#1E293B" />
-        <text x="26" y="90" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#E2E8F0">Semantic Query Similarity</text>
-        <text x="26" y="108" font-family="Courier, monospace" font-size="10" fill="#38BDF8">Dense Candidate Scores: [0.94, 0.88, 0.82]</text>
-        <text x="26" y="122" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Top 20 Dense Chunks Retrieved</text>
+        <rect x="14" y="54" width="236" height="84" rx="6" fill="#162032" />
+        <text x="24" y="74" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#E2E8F0">Semantic Similarity Matching</text>
+        <text x="24" y="94" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#38BDF8">Dense Vector Scores: 0.94</text>
+        <text x="24" y="112" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Retrieves Top 20 Candidates</text>
       </g>
-
-      <g transform="translate(0, 165)">
-        <rect width="264" height="150" rx="10" fill="#0F172A" stroke="#D97706" stroke-width="1" />
+      <g transform="translate(0, 170)">
+        <rect width="264" height="155" rx="10" fill="#0F172A" stroke="#D97706" stroke-width="1" />
         <text x="16" y="24" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#FBBF24">Sparse Keyword Search (BM25)</text>
-        <text x="16" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">Algorithm: BM25Okapi Token Index</text>
-        <text x="16" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#64748B">Matches Serial Nos, Codes &amp; Terms</text>
+        <text x="16" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">BM25Okapi Inverted Token Index</text>
 
-        <rect x="16" y="70" width="232" height="65" rx="6" fill="#1E293B" />
-        <text x="26" y="90" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#E2E8F0">Inverted Frequency Index</text>
-        <text x="26" y="108" font-family="Courier, monospace" font-size="10" fill="#FBBF24">Matched: "warranty", "ISO-9001"</text>
-        <text x="26" y="122" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Top 20 Sparse Chunks Retrieved</text>
+        <rect x="14" y="54" width="236" height="84" rx="6" fill="#162032" />
+        <text x="24" y="74" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#E2E8F0">Exact Term &amp; Serial ID Match</text>
+        <text x="24" y="94" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#FBBF24">Matched: "warranty", "ISO-9001"</text>
+        <text x="24" y="112" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Retrieves Top 20 Candidates</text>
       </g>
-
-      <g transform="translate(0, 330)">
-        <rect width="264" height="140" rx="10" fill="#0F172A" stroke="#818CF8" stroke-width="1" />
+      <g transform="translate(0, 340)">
+        <rect width="264" height="145" rx="10" fill="#0F172A" stroke="#818CF8" stroke-width="1" />
         <text x="16" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#A78BFA">Reciprocal Rank Fusion (RRF)</text>
-        <text x="16" y="44" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">Merges Dense + Sparse Ranks</text>
+        <text x="16" y="44" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#94A3B8">Combines Dense &amp; Sparse Ranks</text>
 
-        <rect x="16" y="58" width="232" height="65" rx="6" fill="#1E293B" />
-        <text x="26" y="78" font-family="Courier, monospace" font-size="10" fill="#C084FC">RRF(c) = Σ 1 / (60 + rank(c))</text>
-        <text x="26" y="96" font-family="system-ui, -apple-system, font-size="11" fill="#F1F5F9">Combined Pool: Top 30 Candidates</text>
-        <text x="26" y="112" font-family="system-ui, -apple-system, font-size="10" fill="#64748B">Passed to Cross-Encoder</text>
+        <rect x="14" y="56" width="236" height="72" rx="6" fill="#162032" />
+        <text x="24" y="78" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#F1F5F9">Fused Pool: Top 30 Candidates</text>
+        <text x="24" y="96" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Passed to Cross-Encoder</text>
       </g>
     </g>
   </g>
 
-  <!-- STAGE 4: RERANKING & LLM -->
-  <g transform="translate(1000, 140)" filter="url(#card-shadow)">
-    <rect width="260" height="600" rx="16" fill="url(#card-bg)" stroke="#334155" stroke-width="1" />
-    <rect width="260" height="50" rx="16" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-    <text x="20" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#F43F5E" letter-spacing="1">04. RERANK &amp; LLM</text>
-    <text x="165" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="11" fill="#64748B">Generation</text>
+  <!-- STAGE 4: RE-RANK & LLM -->
+  <g transform="translate(1000, 140)" filter="url(#glow-shadow)">
+    <rect width="260" height="600" rx="16" fill="url(#card-grad)" stroke="#1E293D" stroke-width="1" />
+    <rect width="260" height="46" rx="16" fill="#0F172A" stroke="#162032" stroke-width="1" />
+    <text x="20" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F43F5E" letter-spacing="1">04. AI ENGINE</text>
 
-    <g transform="translate(18, 75)">
+    <g transform="translate(18, 70)">
       <g transform="translate(0, 0)">
         <rect width="224" height="210" rx="10" fill="#0F172A" stroke="#10B981" stroke-width="1" />
         <text x="16" y="24" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#34D399">Cross-Encoder Reranker</text>
@@ -237,87 +238,83 @@
           <rect width="200" height="34" rx="6" fill="#064E3B" stroke="#10B981" stroke-width="1" />
           <text x="10" y="21" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#A7F3D0">#1 Relevant Context Chunk</text>
 
-          <rect y="42" width="200" height="30" rx="6" fill="#1E293B" stroke="#334155" stroke-width="1" opacity="0.3" />
-          <text x="10" y="61" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Irrelevant Chunk (Filtered Out)</text>
+          <rect y="42" width="200" height="30" rx="6" fill="#162032" stroke="#1E293D" stroke-width="1" opacity="0.3" />
+          <text x="10" y="61" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Irrelevant Chunk (Filtered)</text>
 
           <rect y="80" width="200" height="34" rx="6" fill="#064E3B" stroke="#10B981" stroke-width="1" />
           <text x="10" y="101" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#A7F3D0">#2 Relevant Context Chunk</text>
 
           <rect y="122" width="200" height="24" rx="4" fill="#0F172A" />
-          <text x="10" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#34D399">Compressed Context: Top 5 Chunks</text>
+          <text x="10" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="600" fill="#34D399">Context Compressed: Top 5</text>
         </g>
       </g>
 
-      <g transform="translate(0, 230)">
-        <rect width="224" height="240" rx="10" fill="#0F172A" stroke="#38BDF8" stroke-width="1" />
-        <text x="16" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#38BDF8">LLM Orchestrator</text>
+      <g transform="translate(0, 226)">
+        <rect width="224" height="250" rx="10" fill="#0F172A" stroke="#38BDF8" stroke-width="1" />
+        <text x="16" y="26" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#38BDF8">LLM Orchestration</text>
 
         <g transform="translate(12, 40)">
-          <rect width="200" height="65" rx="8" fill="#1E293B" stroke="#0284C7" stroke-width="1" />
+          <rect width="200" height="68" rx="8" fill="#162032" stroke="#0284C7" stroke-width="1" />
           <text x="12" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#7DD3FC">PRIMARY: NVIDIA NIM API</text>
           <text x="12" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#F1F5F9">meta/llama3-70b-instruct</text>
-          <text x="12" y="52" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">High-Speed Enterprise Inference</text>
+          <text x="12" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Enterprise High-Speed Inference</text>
         </g>
 
-        <g transform="translate(12, 115)">
-          <rect width="200" height="65" rx="8" fill="#1E293B" stroke="#D97706" stroke-width="1" />
+        <g transform="translate(12, 118)">
+          <rect width="200" height="68" rx="8" fill="#162032" stroke="#D97706" stroke-width="1" />
           <text x="12" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#FBBF24">FALLBACK: Groq API</text>
           <text x="12" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#F1F5F9">llama3-70b-8192</text>
-          <text x="12" y="52" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Automatic Failover Protection</text>
+          <text x="12" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Automatic Failover Protection</text>
         </g>
 
-        <text x="16" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">• Guardrails &amp; Query Rewriter Enabled</text>
+        <text x="16" y="218" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Guardrails &amp; Rewriter Active</text>
       </g>
     </g>
   </g>
 
-  <!-- STAGE 5: CITATIONS & AUDIT -->
-  <g transform="translate(1300, 140)" filter="url(#card-shadow)">
-    <rect width="240" height="600" rx="16" fill="url(#card-bg)" stroke="#10B981" stroke-width="1" />
-    
-    <rect width="240" height="50" rx="16" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-    <text x="18" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#34D399" letter-spacing="1">05. FAITHFUL OUTPUT</text>
-    <text x="165" y="31" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="11" fill="#64748B">Citations</text>
+  <!-- STAGE 5: GROUNDED CITATIONS -->
+  <g transform="translate(1300, 140)" filter="url(#glow-shadow)">
+    <rect width="240" height="600" rx="16" fill="url(#card-grad)" stroke="#10B981" stroke-width="1" />
+    <rect width="240" height="46" rx="16" fill="#0F172A" stroke="#162032" stroke-width="1" />
+    <text x="18" y="28" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#34D399" letter-spacing="1">05. CITATIONS</text>
 
-    <g transform="translate(16, 75)">
-      <rect width="208" height="36" rx="8" fill="#064E3B" stroke="#10B981" stroke-width="1" />
-      <circle cx="20" cy="18" r="5" fill="#34D399" />
-      <text x="34" y="22" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#A7F3D0">FAITHFULNESS VERIFIED</text>
+    <g transform="translate(16, 70)">
+      <rect width="208" height="34" rx="8" fill="#064E3B" stroke="#10B981" stroke-width="1" />
+      <circle cx="20" cy="17" r="4.5" fill="#34D399" />
+      <text x="32" y="21" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#A7F3D0">FAITHFULNESS VERIFIED</text>
 
-      <g transform="translate(0, 48)">
-        <rect width="208" height="170" rx="10" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
-        <text x="14" y="24" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F1F5F9">Grounded AI Answer</text>
+      <g transform="translate(0, 46)">
+        <rect width="208" height="175" rx="10" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
+        <text x="14" y="24" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F1F5F9">Grounded Response</text>
         
-        <rect x="14" y="36" width="180" height="1" fill="#334155" />
+        <rect x="14" y="34" width="180" height="1" fill="#1E293D" />
         
-        <text x="14" y="56" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#CBD5E1">"Standard system warranty</text>
-        <text x="14" y="74" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#CBD5E1">includes 5-year full system</text>
-        <text x="14" y="92" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#CBD5E1">replacement coverage</text>
-        <text x="14" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#CBD5E1">certified under ISO-9001."</text>
+        <text x="14" y="54" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#CBD5E1">"Standard system warranty</text>
+        <text x="14" y="72" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#CBD5E1">includes 5-year full system</text>
+        <text x="14" y="90" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#CBD5E1">replacement coverage</text>
+        <text x="14" y="108" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#CBD5E1">certified under ISO-9001."</text>
 
-        <rect x="14" y="128" width="180" height="28" rx="6" fill="#1E293B" />
-        <text x="22" y="146" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="10" fill="#34D399">100% Claim Grounding Score</text>
+        <rect x="14" y="130" width="180" height="30" rx="6" fill="#162032" />
+        <text x="22" y="149" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="10" fill="#34D399">100% Claim Grounding Score</text>
       </g>
 
-      <g transform="translate(0, 230)">
+      <g transform="translate(0, 236)">
         <text x="0" y="16" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="12" fill="#F1F5F9">PDF Citation Highlights</text>
 
         <g transform="translate(0, 26)">
           <rect width="208" height="60" rx="8" fill="#0F172A" stroke="#0284C7" stroke-width="1" />
-          <text x="12" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#38BDF8">Citation #1 (Click to Highlight)</text>
+          <text x="12" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#38BDF8">Citation #1 (Highlight Targets)</text>
           <text x="12" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#F1F5F9">Technical Manual.pdf</text>
           <text x="12" y="50" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Page 21 • BBox [50, 120, 520, 180]</text>
         </g>
-
-        <g transform="translate(0, 94)">
-          <rect width="208" height="60" rx="8" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
+        <g transform="translate(0, 96)">
+          <rect width="208" height="60" rx="8" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
           <text x="12" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#818CF8">Citation #2</text>
           <text x="12" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#F1F5F9">Specification Doc.docx</text>
           <text x="12" y="50" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Page 5 • Section 4.2</text>
         </g>
-
-        <g transform="translate(0, 162)">
-          <rect width="208" height="60" rx="8" fill="#0F172A" stroke="#1E293B" stroke-width="1" />
+        <g transform="translate(0, 166)">
+          <rect width="208" height="60" rx="8" fill="#0F172A" stroke="#1E293D" stroke-width="1" />
           <text x="12" y="20" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="11" fill="#C084FC">Citation #3</text>
           <text x="12" y="36" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#F1F5F9">Pricing Spreadsheet.xlsx</text>
           <text x="12" y="50" font-family="system-ui, -apple-system, sans-serif" font-size="10" fill="#64748B">Sheet 1 • Row 14</text>
