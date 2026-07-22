@@ -1,22 +1,11 @@
-<p align="center">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 200" width="100%">
-    <defs>
-      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
-        <stop offset="50%" style="stop-color:#3b82f6;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
-      </linearGradient>
-      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
-      </linearGradient>
-    </defs>
-    <rect width="900" height="200" rx="16" fill="url(#bgGrad)" stroke="#334155" stroke-width="2"/>
-    <text x="450" y="85" fill="url(#grad1)" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="800" font-size="44" text-anchor="middle">DocIntel Platform</text>
-    <text x="450" y="130" fill="#94a3b8" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-weight="500" font-size="18" text-anchor="middle">Enterprise AI Document Intelligence with Hybrid RAG, Citations & OCR</text>
-    <rect x="250" y="150" width="400" height="2" fill="url(#grad1)" />
-  </svg>
-</p>
+```text
+██████╗  ██████╗  ██████╗██╗███╗   ██╗████████╗███████╗██╗
+██╔══██╗██╔═══██╗██╔════╝██║████╗  ██║╚══██╔══╝██╔════╝██║
+██║  ██║██║   ██║██║     ██║██╔██╗ ██║   ██║   █████╗  ██║
+██║  ██║██║   ██║██║     ██║██║╚██╗██║   ██║   ██╔══╝  ██║
+██████╔╝╚██████╔╝╚██████╗██║██║ ╚████║   ██║   ███████╗███████╗
+╚═════╝  ╚═════╝  ╚═════╝╚═╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚══════╝
+```
 
 <p align="center">
   <a href="#"><img src="https://img.shields.io/badge/Platform-DocIntel_v1.0-06b6d4?style=for-the-badge&logo=hyper&logoColor=white" alt="Platform Badge"></a>
