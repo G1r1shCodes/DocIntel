@@ -200,12 +200,10 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
             {/* ── Bbox highlight overlay ──────────────────────────────── */}
             {bboxStyle && (
-              <div className="bbox-overlay" style={bboxStyle}>
-                <div className="absolute -top-2.5 right-2 bg-accent text-white font-semibold text-[10px] px-2 py-0.5 rounded-full shadow-sm flex items-center space-x-1 whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                  <span>Source Citation</span>
-                </div>
-              </div>
+              <div 
+                className="absolute mix-blend-multiply bg-yellow-300/40 border-b-2 border-yellow-400 rounded-sm"
+                style={bboxStyle}
+              />
             )}
           </div>
         ) : (

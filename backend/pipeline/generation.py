@@ -1,5 +1,7 @@
 import os
 from openai import AsyncOpenAI
+from dotenv import load_dotenv
+load_dotenv()
 import logging
 from typing import List, Dict, Any, Tuple
 
