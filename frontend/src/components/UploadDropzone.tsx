@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { UploadCloud, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { useAuth } from '@clerk/clerk-react';
 
 interface UploadDropzoneProps {
   onUploadSuccess: () => void;
@@ -10,6 +11,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onUploadSuccess,
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const { getToken } = useAuth();
 
   const handleFileUpload = async (files: FileList | File[]) => {
     if (userRole === 'Viewer') {
@@ -23,7 +25,15 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onUploadSuccess,
     const formData = new FormData();
     formData.append('file', file);
     try {
-      const res = await fetch('http://localhost:8000/api/documents/upload', { method: 'POST', headers: { 'X-User-Role': userRole }, body: formData });
+      const token = await getToken();
+      const res = await fetch('/api/documents/upload', { 
+        method: 'POST', 
+        headers: { 
+          'X-User-Role': userRole,
+          'Authorization': `Bearer ${token}` 
+        }, 
+        body: formData 
+      });
       if (!res.ok) { const errData = await res.json(); throw new Error(errData.detail || 'Upload failed'); }
       const data = await res.json();
       setUploadStatus({ type: 'success', message: `Parsed & Indexed "${data.filename}" (${data.page_count} pages, ${data.chunk_count} chunks)` });

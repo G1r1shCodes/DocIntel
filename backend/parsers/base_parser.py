@@ -1,19 +1,8 @@
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
+"""
+Backward-compatibility shim.
 
-@dataclass
-class PageData:
-    page_number: int
-    text: str
-    blocks: List[Dict[str, Any]] = field(default_factory=list)
-    tables: List[Dict[str, Any]] = field(default_factory=list)
-    headings: List[str] = field(default_factory=list)
-    is_ocr: bool = False
+``from parsers.base_parser import DocumentData, PageData`` still works
+but the canonical home is now ``parsers.base``.
+"""
 
-@dataclass
-class DocumentData:
-    filename: str
-    file_type: str
-    text: str
-    metadata: Dict[str, Any]
-    pages: List[PageData]
+from .base import DocumentData, PageData  # noqa: F401

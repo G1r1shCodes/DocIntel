@@ -1,0 +1,9 @@
+__pycache__
+*.pyc
+.env
+rag_app.db
+index_data/
+uploads/
+venv/
+.pytest_cache
+.git

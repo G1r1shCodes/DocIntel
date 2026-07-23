@@ -15,13 +15,19 @@ def process_and_ingest_file(file_path: str) -> Dict[str, Any]:
         raise FileNotFoundError(f"File not found: {file_path}")
 
     # 1. Parse document into standardized DocumentData
+    print(f"  -> Parsing document...", flush=True)
     parsed_doc = parse_document(file_path)
+    print(f"  -> Parsed {len(parsed_doc.pages)} pages successfully.", flush=True)
 
     # 2. Apply adaptive chunking
+    print(f"  -> Adaptive chunking...", flush=True)
     chunks = adaptive_chunking(parsed_doc)
+    print(f"  -> Created {len(chunks)} chunks.", flush=True)
 
     # 3. Add chunks to hybrid retriever index
+    print(f"  -> Indexing chunks into hybrid retriever (FAISS + BM25)...", flush=True)
     retriever_instance.add_chunks(chunks)
+    print(f"  -> Hybrid indexing finished.", flush=True)
 
     return {
         "filename": parsed_doc.filename,
@@ -29,5 +35,13 @@ def process_and_ingest_file(file_path: str) -> Dict[str, Any]:
         "page_count": len(parsed_doc.pages),
         "chunk_count": len(chunks),
         "metadata": parsed_doc.metadata,
-        "chunks": chunks
+        "chunks": chunks,
+        "_pages": [
+            {
+                "page_number": p.page_number,
+                "page_width": p.page_width,
+                "page_height": p.page_height,
+            }
+            for p in parsed_doc.pages
+        ],
     }

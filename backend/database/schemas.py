@@ -10,12 +10,16 @@ class Bbox(BaseModel):
 
 class CitationResponse(BaseModel):
     citation_id: str
+    chunk_id: Optional[int] = None
+    document_id: Optional[int] = None
     filename: str
     page_number: int
     heading: Optional[str] = None
     section: Optional[str] = None
     text_snippet: str
     bbox: Optional[Bbox] = None
+    page_width: Optional[float] = None
+    page_height: Optional[float] = None
 
 class ChatMessageResponse(BaseModel):
     id: int
@@ -53,6 +57,8 @@ class DocumentChunkResponse(BaseModel):
     is_table: bool
     text: str
     bbox: Optional[Dict[str, Any]] = None
+    page_width: Optional[float] = None
+    page_height: Optional[float] = None
 
 class DocumentChunksResponse(BaseModel):
     document_id: int
@@ -70,6 +76,7 @@ class DocumentResponse(BaseModel):
     status: str
     search_count: int
     uploaded_by: str
+    file_hash: Optional[str] = None
 
 class BookmarkResponse(BaseModel):
     id: int
@@ -115,6 +122,7 @@ class UploadResponse(BaseModel):
     file_type: str
     page_count: int
     chunk_count: int
+    file_hash: Optional[str] = None
     message: str
 
 class GenericResponse(BaseModel):

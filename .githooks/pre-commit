@@ -1,0 +1,42 @@
+#!/bin/bash
+# DocIntel Pre-Commit Hook
+# Runs backend pytest and frontend TypeScript typecheck before each commit.
+# Install with:  git config core.hooksPath .githooks
+
+set -eo pipefail
+echo "🔍 Running pre-commit checks..."
+echo ""
+
+# ── Backend tests ────────────────────────────────────────────────
+echo "📦 Backend: running pytest..."
+cd backend
+python -m pytest tests/ -q --tb=short 2>&1
+PYTEST_EXIT=$?
+cd ..
+
+if [ $PYTEST_EXIT -ne 0 ]; then
+    echo ""
+    echo "❌ Backend tests FAILED (exit code $PYTEST_EXIT)."
+    echo "   Fix the failures before committing."
+    exit 1
+fi
+echo "✅ Backend tests passed."
+echo ""
+
+# ── Frontend typecheck ───────────────────────────────────────────
+echo "📦 Frontend: running TypeScript typecheck..."
+cd frontend
+npx tsc --noEmit 2>&1
+TSC_EXIT=$?
+cd ..
+
+if [ $TSC_EXIT -ne 0 ]; then
+    echo ""
+    echo "❌ Frontend typecheck FAILED (exit code $TSC_EXIT)."
+    echo "   Fix the type errors before committing."
+    exit 1
+fi
+echo "✅ Frontend typecheck passed."
+echo ""
+
+echo "🎉 All pre-commit checks passed!"

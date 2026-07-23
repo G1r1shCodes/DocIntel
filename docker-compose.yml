@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: docintel-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads:/app/uploads
+      - index_data:/app/index_data
+      - ./backend/rag_app.db:/app/rag_app.db
+    environment:
+      - DATABASE_URL=sqlite:///./rag_app.db
+      - UPLOAD_DIR=/app/uploads
+      - DOCINTEL_INDEX_DIR=/app/index_data
+      - DOCINTEL_OCR_TIMEOUT=30
+      - NVIDIA_API_KEY=${NVIDIA_API_KEY:-}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - CLERK_SECRET_KEY=${CLERK_SECRET_KEY:-}
+      - CLERK_ISSUER=${CLERK_ISSUER:-}
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: docintel-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  uploads:
+  index_data:

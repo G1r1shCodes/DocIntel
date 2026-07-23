@@ -146,28 +146,28 @@ async def process_chat_query(
     db.commit()
     db.refresh(bot_msg)
 
-    # Store Citations in DB
+    # Store Citations in DB (using new compact model)
     citation_objs = []
     for c in citations_data:
         doc = db.query(Document).filter(Document.filename == c["filename"]).first()
-        bbox = c.get("bbox") or {}
+
         cit = Citation(
             message_id=bot_msg.id,
+            chunk_id=c.get("chunk_id"),
             document_id=doc.id if doc else None,
+            chunk_index=0,
             filename=c["filename"],
             page_number=c["page_number"],
-            heading=c["heading"],
-            section=c["section"],
-            text_snippet=c["text_snippet"],
-            bbox_x0=bbox.get("x0"),
-            bbox_y0=bbox.get("y0"),
-            bbox_x1=bbox.get("x1"),
-            bbox_y1=bbox.get("y1")
+            heading=c.get("heading"),
+            section=c.get("section"),
+            text_snippet=c.get("text_snippet", ""),
+            bbox=c.get("bbox"),          # Single JSON column → {"x0":…, "y0":…, "x1":…, "y1":…}
+            page_width=c.get("page_width"),
+            page_height=c.get("page_height"),
         )
         db.add(cit)
         citation_objs.append(cit)
 
-        # Increment document search count metric
         if doc:
             doc.search_count += 1
 
@@ -246,12 +246,16 @@ def get_session_messages(
     for msg in session.messages:
         citations = [{
             "citation_id": f"cit_{c.id}",
+            "chunk_id": c.chunk_id,
+            "document_id": c.document_id,
             "filename": c.filename,
             "page_number": c.page_number,
             "heading": c.heading,
             "section": c.section,
             "text_snippet": c.text_snippet,
-            "bbox": {"x0": c.bbox_x0, "y0": c.bbox_y0, "x1": c.bbox_x1, "y1": c.bbox_y1} if c.bbox_x0 is not None else None
+            "bbox": c.bbox,  # Single JSON column
+            "page_width": c.page_width,
+            "page_height": c.page_height,
         } for c in msg.citations]
 
         messages.append({

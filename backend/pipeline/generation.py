@@ -97,45 +97,73 @@ async def run_query_rewrite(query: str) -> str:
     return query
 
 
-def build_citations(retrieved_chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def build_citations(
+    retrieved_chunks: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
     """
-    Constructs clean citation objects with page numbers, section headers, text snippets, and bounding box offsets.
+    Build structured citation objects from retrieved chunks.
+
+    Every citation is backed by:
+    * ``chunk_db_id`` — the database primary key of ``DocumentChunk``,
+      allowing the frontend or API consumer to resolve full chunk data.
+    * ``bbox`` — real bounding-box coordinates from the parser (not synthetic).
+      When a chunk spans multiple blocks the first block's bbox is used.
+    * ``page_width`` / ``page_height`` — for accurate coordinate scaling
+      in the frontend PDF viewer.
+
+    Chunks with identical ``(filename, page, heading, text[:50])`` are
+    deduplicated to avoid showing the same evidence twice.
     """
-    citations = []
-    seen = set()
+    citations: list[dict[str, Any]] = []
+    seen: set[tuple] = set()
 
     for idx, chunk in enumerate(retrieved_chunks):
-        filename = chunk.get("metadata", {}).get("filename", "Document")
+        meta = chunk.get("metadata", {})
+        filename = meta.get("filename", "Document")
         page = chunk.get("page_number", 1)
         heading = chunk.get("heading", "Section")
         text = chunk.get("text", "")
         bbox = chunk.get("bbox", None)
 
-        key = (filename, page, heading, text[:50])
-        if key in seen:
+        dedup_key = (filename, page, heading, text[:50])
+        if dedup_key in seen:
             continue
-        seen.add(key)
+        seen.add(dedup_key)
 
-        bbox_dict = None
+        # ── Real bounding box (only when the parser provided coordinates) ──
+        bbox_dict: dict[str, int] | None = None
         if bbox and len(bbox) == 4:
-            bbox_dict = {
-                "x0": int(bbox[0]),
-                "y0": int(bbox[1]),
-                "x1": int(bbox[2]),
-                "y1": int(bbox[3])
-            }
-        else:
-            # Default fallback highlight box for UI PDF overlay
-            bbox_dict = {"x0": 50, "y0": 100 + (idx * 40), "x1": 500, "y1": 150 + (idx * 40)}
+            try:
+                bbox_dict = {
+                    "x0": int(bbox[0]),
+                    "y0": int(bbox[1]),
+                    "x1": int(bbox[2]),
+                    "y1": int(bbox[3]),
+                }
+            except (TypeError, ValueError):
+                bbox_dict = None
 
-        citations.append({
-            "citation_id": f"cit_{idx + 1}",
-            "filename": filename,
-            "page_number": page,
-            "heading": heading,
-            "section": chunk.get("section", f"Page {page}"),
-            "text_snippet": text[:250] + ("..." if len(text) > 250 else ""),
-            "bbox": bbox_dict
-        })
+        # Page dimensions for frontend coordinate scaling
+        page_w: float | None = None
+        page_h: float | None = None
+        if bbox_dict:
+            page_w = meta.get("_page_width")
+            page_h = meta.get("_page_height")
+
+        citations.append(
+            {
+                "citation_id": f"cit_{idx + 1}",
+                "chunk_id": meta.get("chunk_db_id"),
+                "document_id": meta.get("document_id"),
+                "filename": filename,
+                "page_number": page,
+                "heading": heading,
+                "section": chunk.get("section", f"Page {page}"),
+                "text_snippet": text[:250] + ("..." if len(text) > 250 else ""),
+                "bbox": bbox_dict,
+                "page_width": page_w,
+                "page_height": page_h,
+            }
+        )
 
     return citations

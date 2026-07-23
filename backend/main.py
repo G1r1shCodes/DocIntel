@@ -1,4 +1,11 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
+# Prevent PyTorch/OpenMP deadlocks on Windows
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+os.environ["OMP_NUM_THREADS"] = "1"
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -9,6 +16,7 @@ from api.documents_router import router as documents_router, UPLOAD_DIR
 from api.chat_router import router as chat_router
 from api.bookmarks_router import router as bookmarks_router
 from api.analytics_router import router as analytics_router
+from pipeline.retrieval import get_embedder, retriever_instance
 
 # Create database tables automatically
 Base.metadata.create_all(bind=engine)
@@ -22,7 +30,7 @@ app = FastAPI(
 # Enable CORS for Next.js / Vite frontends
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -30,6 +38,17 @@ app.add_middleware(
 
 # Mount uploaded files static directory so frontend can fetch PDFs for inline display
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
+@app.on_event("startup")
+async def startup_event():
+    print("Initializing embedding models and loading indexes...", flush=True)
+    get_embedder()
+    retriever_instance.load()
+    print("Startup complete: models + index loaded.", flush=True)
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    print("Shutting down — index already persisted on every mutation.", flush=True)
 
 # Include Routers
 app.include_router(documents_router)

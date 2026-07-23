@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bookmark, Search, Trash2, FileText, Calendar, RefreshCw } from 'lucide-react';
 import { EmptyState } from './EmptyState';
+import { useAuth } from '@clerk/clerk-react';
 
 interface SavedBookmark {
   id: number;
@@ -15,29 +16,42 @@ interface BookmarksViewProps {
   userRole: string;
 }
 
-export const BookmarksView: React.FC<BookmarksViewProps> = () => {
+export const BookmarksView: React.FC<BookmarksViewProps> = ({ userRole }) => {
   const [bookmarks, setBookmarks] = useState<SavedBookmark[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const { getToken } = useAuth();
 
   const fetchBookmarks = async () => {
     setLoading(true);
     try {
-      const url = searchQuery
-        ? `http://localhost:8000/api/bookmarks/?search=${encodeURIComponent(searchQuery)}`
-        : `http://localhost:8000/api/bookmarks/`;
-      const res = await fetch(url);
+      let url = '/api/bookmarks/';
+      if (searchQuery.trim()) url += `?search=${encodeURIComponent(searchQuery.trim())}`;
+      const token = await getToken();
+      const res = await fetch(url, {
+        headers: { 
+          'X-User-Role': userRole,
+          'Authorization': `Bearer ${token}` 
+        }
+      });
       if (res.ok) { const data = await res.json(); setBookmarks(data); }
     } catch (e) { console.error('Error fetching bookmarks:', e); } finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchBookmarks(); }, [searchQuery]);
+  useEffect(() => { fetchBookmarks(); }, [searchQuery, getToken]);
 
   const handleDelete = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/bookmarks/${id}`, { method: 'DELETE' });
-      if (res.ok) setBookmarks(bookmarks.filter((b) => b.id !== id));
-    } catch (e) { console.error('Error deleting bookmark:', e); }
+      const token = await getToken();
+      const res = await fetch(`/api/bookmarks/${id}`, { 
+        method: 'DELETE',
+        headers: { 
+          'X-User-Role': userRole,
+          'Authorization': `Bearer ${token}` 
+        }
+      });
+      if (res.ok) { setBookmarks((prev) => prev.filter((b) => b.id !== id)); }
+    } catch (e) { console.error('Delete error', e); }
   };
 
   return (

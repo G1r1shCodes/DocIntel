@@ -1,31 +1,106 @@
+"""
+DocIntel Parser Registry
+========================
+
+Unified entrypoint for multi-format document parsing with automatic
+parser discovery and registration.
+
+Usage
+-----
+>>> from parsers import parse_document
+>>> doc = parse_document("report.pdf")
+"""
+
+from __future__ import annotations
+
 import os
-from .base_parser import DocumentData
-from .pdf_parser import parse_pdf
-from .docx_parser import parse_docx
-from .excel_parser import parse_excel
-from .csv_parser import parse_csv
-from .image_parser import parse_image
-from .txt_parser import parse_txt
+
+# Import the base classes so they are available as ``parsers.BaseParser`` etc.
+from .base import (
+    BaseParser,
+    DocumentData,
+    PageData,
+    _PARSER_REGISTRY,
+    _register,
+    check_magic_bytes,
+)
+from .exceptions import (
+    FileValidationError,
+    OCRError,
+    ParserError,
+    ParsingInterruptedError,
+    UnsupportedFormatError,
+)
+
+# ---------------------------------------------------------------------------
+# Auto-import concrete parsers so their ``__init_subclass__`` hook runs.
+# ---------------------------------------------------------------------------
+from . import pdf_parser  # noqa: F401
+from . import docx_parser  # noqa: F401
+from . import excel_parser  # noqa: F401
+from . import csv_parser  # noqa: F401
+from . import image_parser  # noqa: F401
+from . import txt_parser  # noqa: F401
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
+__all__ = [
+    # Factory
+    "parse_document",
+    # Data models
+    "DocumentData",
+    "PageData",
+    "BaseParser",
+    # Exceptions
+    "ParserError",
+    "UnsupportedFormatError",
+    "FileValidationError",
+    "OCRError",
+    "ParsingInterruptedError",
+    # Utilities
+    "check_magic_bytes",
+    "get_registered_parsers",
+]
+
+
+def get_registered_parsers() -> dict[str, BaseParser]:
+    """Return a copy of the current extension → parser mapping."""
+    return dict(_PARSER_REGISTRY)
+
 
 def parse_document(file_path: str) -> DocumentData:
     """
-    Unified entrypoint router for multi-format document parsing.
-    Supports PDF, DOCX, XLSX, CSV, TXT, and Images.
+    Route *file_path* to the correct parser, validate magic bytes,
+    parse, and return a :class:`DocumentData` instance.
+
+    Raises
+    ------
+    UnsupportedFormatError
+        If no parser is registered for the file's extension.
+    FileValidationError
+        If the file header / magic bytes don't match the expected format.
     """
     ext = os.path.splitext(file_path)[1].lower()
-    
-    if ext == ".pdf":
-        return parse_pdf(file_path)
-    elif ext in [".docx", ".doc"]:
-        return parse_docx(file_path)
-    elif ext in [".xlsx", ".xls"]:
-        return parse_excel(file_path)
-    elif ext == ".csv":
-        return parse_csv(file_path)
-    elif ext in [".png", ".jpg", ".jpeg", ".tiff", ".bmp", ".webp"]:
-        return parse_image(file_path)
-    elif ext in [".txt", ".md", ".json", ".log"]:
-        return parse_txt(file_path)
-    else:
-        # Fallback to plain text reading
-        return parse_txt(file_path)
+
+    parser = _PARSER_REGISTRY.get(ext)
+    if parser is None:
+        # Last resort: try the generic fallback
+        parser = _PARSER_REGISTRY.get(".*")
+
+    if parser is None:
+        raise UnsupportedFormatError(
+            extension=ext or "(no extension)",
+            file_path=file_path,
+        )
+
+    # Validate before parsing
+    if not parser.validate(file_path):
+        raise FileValidationError(
+            expected=f"magic bytes for {ext}",
+            actual=parser.read_header(file_path).decode("latin-1"),
+            file_path=file_path,
+        )
+
+    return parser.parse(file_path)

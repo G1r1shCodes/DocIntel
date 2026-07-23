@@ -21,14 +21,16 @@ class Document(Base):
     __tablename__ = "documents"
 
     id = Column(Integer, primary_key=True, index=True)
-    filename = Column(String, index=True)
-    file_type = Column(String)  # pdf, docx, xlsx, csv, txt, image
-    file_path = Column(String)
+    filename = Column(String, index=True)                     # Original user-facing filename
+    internal_filename = Column(String, nullable=True)         # UUID-based storage name
+    file_type = Column(String)                                # pdf, docx, xlsx, csv, txt, image
+    file_path = Column(String)                                # Full path on disk
+    file_hash = Column(String, nullable=True, index=True)     # SHA-256 hex digest for dedup
     file_size = Column(Integer, default=0)
     page_count = Column(Integer, default=1)
     chunk_count = Column(Integer, default=0)
     upload_date = Column(DateTime, default=datetime.utcnow)
-    status = Column(String, default="completed")  # processing, completed, failed
+    status = Column(String, default="completed")             # processing, completed, failed
     search_count = Column(Integer, default=0)
     uploaded_by = Column(String, default="Admin")
 
@@ -46,6 +48,8 @@ class DocumentChunk(Base):
     is_table = Column(Boolean, default=False)
     text = Column(Text)
     bbox_json = Column(JSON, nullable=True)
+    page_width = Column(Float, nullable=True)    # For bbox coordinate scaling on frontend
+    page_height = Column(Float, nullable=True)
 
     document = relationship("Document", back_populates="chunks")
 
@@ -78,18 +82,28 @@ class Citation(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     message_id = Column(Integer, ForeignKey("chat_messages.id"))
+    chunk_id = Column(Integer, ForeignKey("document_chunks.id"), nullable=True)
     document_id = Column(Integer, ForeignKey("documents.id"), nullable=True)
+
+    # Denormalised fields derived from the chunk at query time so that
+    # serialisation does not require a second join.  These are *intentionally*
+    # cached copies, not the source of truth.
+    chunk_index = Column(Integer, default=0)
     filename = Column(String)
     page_number = Column(Integer)
     heading = Column(String, nullable=True)
     section = Column(String, nullable=True)
     text_snippet = Column(Text)
-    bbox_x0 = Column(Float, default=0)
-    bbox_y0 = Column(Float, default=0)
-    bbox_x1 = Column(Float, default=0)
-    bbox_y1 = Column(Float, default=0)
+
+    # Single JSON bounding-box object: {"x0": …, "y0": …, "x1": …, "y1": …}
+    bbox = Column(JSON, nullable=True)
+
+    # Page dimensions at render time so the frontend can scale coordinates
+    page_width = Column(Float, nullable=True)
+    page_height = Column(Float, nullable=True)
 
     message = relationship("ChatMessage", back_populates="citations")
+    chunk = relationship("DocumentChunk")
 
 class Bookmark(Base):
     __tablename__ = "bookmarks"

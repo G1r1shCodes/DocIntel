@@ -26,15 +26,20 @@ import { AdminAnalytics } from './components/AdminAnalytics';
 import { BookmarksView } from './components/BookmarksView';
 import { NavButton } from './components/NavButton';
 import { EmptyState } from './components/EmptyState';
+import { SignedIn, SignedOut, SignInButton, UserButton, useAuth } from '@clerk/clerk-react';
 
 interface CitationItem {
   citation_id: string;
+  chunk_id?: number | null;
+  document_id?: number | null;
   filename: string;
   page_number: number;
   heading: string;
   section: string;
   text_snippet: string;
-  bbox: { x0: number; y0: number; x1: number; y1: number };
+  bbox: { x0: number; y0: number; x1: number; y1: number } | null;
+  page_width?: number | null;
+  page_height?: number | null;
 }
 
 function generateUUID(): string {
@@ -69,6 +74,7 @@ export function App() {
   const [activeTab, setActiveTab] = useState<'chat' | 'documents' | 'bookmarks' | 'analytics'>('chat');
   const [userRole, setUserRole] = useState<'Admin' | 'Tender Specialist' | 'Sales' | 'Engineer' | 'Viewer'>('Admin');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { getToken } = useAuth();
   
   const [query, setQuery] = useState('');
   const [messages, setMessages] = useState<ChatMessageItem[]>([
@@ -86,7 +92,7 @@ export function App() {
           heading: 'Section 4.2 - Technical Specifications',
           section: 'Page 1',
           text_snippet: 'Standard system warranty includes 5-year full replacement coverage including surge protection under ISO-9001 certification.',
-          bbox: { x0: 32, y0: 225, x1: 588, y1: 335 }
+          bbox: { x0: 32, y0: 290, x1: 588, y1: 400 }
         }
       ]
     }
@@ -110,8 +116,12 @@ export function App() {
 
   const fetchDocuments = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/documents/', {
-        headers: { 'X-User-Role': userRole }
+      const token = await getToken();
+      const res = await fetch('/api/documents/', {
+        headers: { 
+          'X-User-Role': userRole,
+          'Authorization': `Bearer ${token}`
+        }
       });
       if (res.ok) {
         const data = await res.json();
@@ -157,9 +167,14 @@ export function App() {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/chat/query', {
+      const token = await getToken();
+      const res = await fetch('/api/chat/query', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-User-Role': userRole },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-User-Role': userRole,
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ query: userMessage.content, session_id: sessionId, top_k: 5 })
       });
 
@@ -202,7 +217,14 @@ export function App() {
   const handleDeleteDocument = async (id: number) => {
     if (userRole !== 'Admin') { alert('Deleting documents requires Admin role privileges.'); return; }
     try {
-      await fetch(`http://localhost:8000/api/documents/${id}`, { method: 'DELETE', headers: { 'X-User-Role': userRole } });
+      const token = await getToken();
+      await fetch(`/api/documents/${id}`, { 
+        method: 'DELETE', 
+        headers: { 
+          'X-User-Role': userRole,
+          'Authorization': `Bearer ${token}`
+        } 
+      });
       setDocuments((prev) => prev.filter((d) => d.id !== id));
     } catch {
       setDocuments((prev) => prev.filter((d) => d.id !== id));
@@ -224,9 +246,14 @@ export function App() {
     // Optimistic mark; revert on failure.
     setSavedIds((prev) => new Set(prev).add(msg.id));
     try {
-      const res = await fetch('http://localhost:8000/api/bookmarks/', {
+      const token = await getToken();
+      const res = await fetch('/api/bookmarks/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-User-Role': userRole },
+        headers: { 
+          'Content-Type': 'application/json', 
+          'X-User-Role': userRole,
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error('save failed');
@@ -302,11 +329,20 @@ export function App() {
               <option value="Viewer">Viewer</option>
             </select>
           </div>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="bg-accent text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-accent/90 transition">Sign In</button>
+            </SignInButton>
+          </SignedOut>
         </div>
       </header>
 
       {/* WORKSPACE */}
-      <div className="flex flex-1 overflow-hidden relative">
+      <SignedIn>
+        <div className="flex flex-1 overflow-hidden relative">
         {sidebarOpen && (
           <div className="fixed inset-0 bg-black/20 z-20 lg:hidden" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
         )}
@@ -554,8 +590,26 @@ export function App() {
           {activeTab === 'analytics' && <AdminAnalytics userRole={userRole} />}
         </main>
       </div>
+      </SignedIn>
+      
+      <SignedOut>
+        <div className="flex flex-1 items-center justify-center bg-surface-1">
+          <div className="text-center space-y-4">
+            <ShieldAlert className="w-16 h-16 text-accent mx-auto" />
+            <h2 className="text-2xl font-bold text-text-main">Authentication Required</h2>
+            <p className="text-text-secondary max-w-md mx-auto">Please sign in to access the DocIntel enterprise intelligence platform.</p>
+            <SignInButton mode="modal">
+              <button className="bg-accent text-white px-6 py-2.5 rounded-lg font-medium hover:bg-accent/90 transition">
+                Sign In to Continue
+              </button>
+            </SignInButton>
+          </div>
+        </div>
+      </SignedOut>
+
     </div>
   );
 }
+
 
 export default App;

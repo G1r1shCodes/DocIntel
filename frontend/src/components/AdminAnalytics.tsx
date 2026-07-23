@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BarChart3, FileText, Search, Users, AlertTriangle, Clock, RefreshCw } from 'lucide-react';
 import { StatCard } from './StatCard';
+import { useAuth } from '@clerk/clerk-react';
 
 interface DashboardStats {
   overview: {
@@ -23,16 +24,23 @@ interface AdminAnalyticsProps {
 export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ userRole }) => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const { getToken } = useAuth();
 
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:8000/api/analytics/dashboard', { headers: { 'X-User-Role': userRole } });
+      const token = await getToken();
+      const res = await fetch('/api/analytics/dashboard', { 
+        headers: { 
+          'X-User-Role': userRole,
+          'Authorization': `Bearer ${token}` 
+        } 
+      });
       if (res.ok) { const data = await res.json(); setStats(data); }
     } catch (e) { console.error('Failed to fetch analytics:', e); } finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchStats(); }, [userRole]);
+  useEffect(() => { fetchStats(); }, [userRole, getToken]);
 
   if (loading) {
     return (
