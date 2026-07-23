@@ -34,7 +34,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState<number>(activeCitation?.page_number || 1);
   const [zoom, setZoom] = useState<number>(100);
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [overlayDims, setOverlayDims] = useState({ w: 0, h: 0 });
 
   const targetFilename = activeCitation?.filename || filename;

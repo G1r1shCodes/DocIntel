@@ -20,7 +20,7 @@ groq_client = AsyncOpenAI(
 ) if groq_api_key else None
 
 NVIDIA_MODEL = "meta/llama3-70b-instruct"
-GROQ_MODEL = "llama3-70b-8192"
+GROQ_MODEL = "llama-3.3-70b-versatile"
 
 async def generate_llm_text(prompt: str, system_prompt: str = "You are an enterprise AI document assistant.") -> str:
     """

@@ -7,7 +7,6 @@ import {
   Shield,
   Send,
   CheckCircle2,
-  ExternalLink,
   Bot,
   User,
   Trash2,
@@ -442,30 +441,46 @@ export function App() {
                             )}
                           </div>
                         )}
-                        <div className="whitespace-pre-wrap">{msg.content}</div>
-                        {msg.citations && msg.citations.length > 0 && (
-                          <div className="mt-4 pt-3 border-t border-border-subtle space-y-2">
-                            <p className="text-[11px] font-medium text-text-muted">Citations:</p>
-                            <div className="flex flex-wrap gap-2">
-                              {msg.citations.map((cit) => (
+                        {(() => {
+                          if (!msg.citations || msg.citations.length === 0) {
+                            return <div className="whitespace-pre-wrap">{msg.content}</div>;
+                          }
+                          const regex = /\[(\d+)\]/g;
+                          const parts = [];
+                          let lastIndex = 0;
+                          let match;
+
+                          while ((match = regex.exec(msg.content)) !== null) {
+                            const textBefore = msg.content.slice(lastIndex, match.index);
+                            if (textBefore) parts.push(<span key={`text-${lastIndex}`}>{textBefore}</span>);
+                            
+                            const citIndex = parseInt(match[1], 10) - 1;
+                            if (citIndex >= 0 && citIndex < msg.citations.length) {
+                              const cit = msg.citations[citIndex];
+                              parts.push(
                                 <button
-                                  key={cit.citation_id}
+                                  key={`cit-${match.index}`}
                                   onClick={() => setActiveCitation(cit)}
-                                  className={`px-2.5 py-1.5 rounded-lg text-xs font-mono flex items-center space-x-1.5 cursor-pointer focus:outline-none transition ${
+                                  className={`mx-0.5 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded text-[10px] font-bold cursor-pointer transition focus:outline-none ${
                                     activeCitation?.citation_id === cit.citation_id
-                                      ? 'bg-accent-light text-accent border border-blue-200'
-                                      : 'bg-surface-2 text-text-secondary hover:bg-surface-3 border border-border-subtle'
+                                      ? 'bg-accent text-white shadow-sm'
+                                      : 'bg-accent-light text-accent hover:bg-accent hover:text-white'
                                   }`}
+                                  title={cit.filename}
                                 >
-                                  <FileText className="w-3 h-3 shrink-0 text-accent" />
-                                  <span className="truncate max-w-[220px]">{cit.filename}</span>
-                                  <span className="text-text-muted">p.{cit.page_number}</span>
-                                  <ExternalLink className="w-3 h-3 opacity-50" />
+                                  {match[1]}
                                 </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
+                              );
+                            } else {
+                              parts.push(<span key={`text-${match.index}`}>{match[0]}</span>);
+                            }
+                            lastIndex = regex.lastIndex;
+                          }
+                          const textAfter = msg.content.slice(lastIndex);
+                          if (textAfter) parts.push(<span key={`text-last`}>{textAfter}</span>);
+
+                          return <div className="whitespace-pre-wrap leading-relaxed">{parts}</div>;
+                        })()}
                       </div>
                       {msg.role === 'user' && (
                         <div className="w-8 h-8 rounded-lg bg-surface-2 border border-border-subtle flex items-center justify-center shrink-0">

@@ -118,7 +118,8 @@ async def process_chat_query(
     # 6. LLM Generation (NVIDIA NIM -> Groq -> Local Fallback)
     system_prompt = (
         "You are an enterprise AI document assistant. Answer the user prompt accurately based ONLY on the provided CONTEXT. "
-        "Include reference details if relevant."
+        "Include reference details if relevant. ALWAYS cite your sources using inline brackets like [1], [2] at the end of sentences, "
+        "where the numbers correspond to the Source number of the provided context."
     )
     llm_prompt = f"CONTEXT:\n{compressed_context}\n\nUSER QUESTION: {user_query}"
     raw_answer = await generate_llm_text(llm_prompt, system_prompt=system_prompt)

@@ -374,12 +374,12 @@ def compress_context(
     """Join retrieved chunks into a single context string for the LLM."""
     blocks: list[str] = []
     total = 0
-    for chunk in retrieved_chunks:
+    for idx, chunk in enumerate(retrieved_chunks):
         text = chunk.get("text", "")
         heading = chunk.get("heading", "General")
         page = chunk.get("page_number", 1)
         filename = chunk.get("metadata", {}).get("filename", "document")
-        block = f"[Source: {filename} | Page {page} | {heading}]\n{text}"
+        block = f"[Source {idx + 1}: {filename} | Page {page} | {heading}]\n{text}"
         if total + len(block) > max_chars:
             break
         blocks.append(block)
