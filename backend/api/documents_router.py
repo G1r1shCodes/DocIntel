@@ -287,6 +287,19 @@ def get_document_chunks(document_id: int, db: Session = Depends(get_db)):
 
 from fastapi.responses import FileResponse
 
+MIME_TYPE_MAP = {
+    "pdf": "application/pdf",
+    "png": "image/png",
+    "jpg": "image/jpeg",
+    "jpeg": "image/jpeg",
+    "txt": "text/plain",
+    "csv": "text/csv",
+    "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "doc": "application/msword",
+    "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "xls": "application/vnd.ms-excel",
+}
+
 
 @router.get("/{document_id}/file")
 async def get_document_file(
@@ -302,13 +315,12 @@ async def get_document_file(
         raise HTTPException(status_code=404, detail="Document not found")
     if not doc.file_path or not os.path.exists(doc.file_path):
         raise HTTPException(status_code=404, detail="File not found on disk")
-
-    media_type = "application/pdf" if doc.file_type == "pdf" else "application/octet-stream"
+    media_type = MIME_TYPE_MAP.get(doc.file_type, "application/octet-stream")
     return FileResponse(
         path=doc.file_path,
         filename=doc.filename,
         media_type=media_type,
-        headers={"Content-Disposition": f'inline; filename="{doc.filename}"'},
+        content_disposition_type="inline",
     )
 
 
