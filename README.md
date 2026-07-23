@@ -217,15 +217,32 @@ cd DocIntel
 cp .env.example .env
 ```
 
-Configure `.env`:
+Configure `backend/.env`:
 ```env
 NVIDIA_API_KEY=nvapi-your-nvidia-nim-key
 GROQ_API_KEY=gsk_your-groq-key
 CLERK_SECRET_KEY=sk_test_your-clerk-secret
+CLERK_ISSUER=https://your-clerk-issuer.clerk.accounts.dev
 DATABASE_URL=sqlite:///./docintel.db
 ```
 
-### 2. Backend Execution
+Configure `frontend/.env.local` for authentication:
+```env
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_your-clerk-publishable-key
+```
+
+### 2. Docker Compose Execution (Recommended)
+
+The easiest way to run the entire stack is using Docker Compose. Make sure Docker Desktop is running:
+
+```bash
+docker-compose up --build
+```
+The application frontend will be available at `http://localhost` and the backend API at `http://localhost:8000`.
+
+### 3. Local Development Execution
+
+**Backend:**
 ```bash
 cd backend
 python -m venv venv
@@ -239,7 +256,7 @@ pip install -r requirements.txt
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-### 3. Frontend Execution
+**Frontend:**
 ```bash
 cd ../frontend
 npm install

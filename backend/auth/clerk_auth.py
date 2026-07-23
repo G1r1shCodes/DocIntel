@@ -39,7 +39,9 @@ def get_current_user_from_token(
     Extracts and strictly verifies the current authenticated user from Clerk JWT token.
     Extracts role strictly from the JWT metadata, but allows X-User-Role header override for the frontend role switcher.
     """
+    print(f"[Auth] Extracting user from token...", flush=True)
     if not credentials or not credentials.credentials:
+        print("[Auth] Missing authentication token", flush=True)
         raise HTTPException(status_code=401, detail="Missing authentication token")
         
     token = credentials.credentials
@@ -47,6 +49,7 @@ def get_current_user_from_token(
     role = "Viewer"
 
     try:
+        print("[Auth] Fetching JWKS...", flush=True)
         jwks = get_jwks()
         unverified_header = jwt.get_unverified_header(token)
         

@@ -263,11 +263,17 @@ class HybridRetriever:
         bm25_scores = self.bm25_index.get_scores(tok_query)
         sparse_indices = np.argsort(bm25_scores)[::-1][:min(top_k_sparse, len(self.chunks))]
 
+        # Map FAISS IDs to array indices
+        faiss_to_idx = {c.get("metadata", {}).get("faiss_id"): i for i, c in enumerate(self.chunks) if c.get("metadata", {}).get("faiss_id") is not None}
+
         # 3. RRF fusion
         rrf: dict[int, float] = {}
         k = 60
-        for rank, idx in enumerate(dense_indices[0]):
-            rrf[idx] = rrf.get(idx, 0.0) + 1.0 / (k + rank + 1)
+        for rank, faiss_id in enumerate(dense_indices[0]):
+            # faiss_id can be -1 if FAISS returns empty slots (e.g., when index has fewer than top_k items)
+            if faiss_id in faiss_to_idx:
+                idx = faiss_to_idx[faiss_id]
+                rrf[idx] = rrf.get(idx, 0.0) + 1.0 / (k + rank + 1)
         for rank, idx in enumerate(sparse_indices):
             rrf[idx] = rrf.get(idx, 0.0) + 1.0 / (k + rank + 1)
 
