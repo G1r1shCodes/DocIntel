@@ -17,7 +17,10 @@ import {
   AlertTriangle,
   ShieldAlert,
   HelpCircle,
-  Check
+  Check,
+  Eye,
+  Download,
+  Image
 } from 'lucide-react';
 import { DocumentViewer } from './components/DocumentViewer';
 import { UploadDropzone } from './components/UploadDropzone';
@@ -102,6 +105,9 @@ export function App() {
   const [activeCitation, setActiveCitation] = useState<CitationItem | null>(null);
   const [documents, setDocuments] = useState<IngestedDoc[]>([]);
   const [savedIds, setSavedIds] = useState<Set<string | number>>(new Set());
+  const [previewDoc, setPreviewDoc] = useState<IngestedDoc | null>(null);
+  const [previewTextContent, setPreviewTextContent] = useState<string | null>(null);
+  const [previewTextLoading, setPreviewTextLoading] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -562,7 +568,7 @@ export function App() {
                             <th className="px-6 py-3">Pages</th>
                             <th className="px-6 py-3">Chunks</th>
                             <th className="px-6 py-3">Status</th>
-                            <th className="px-6 py-3 text-right">Actions</th>
+                            <th className="px-6 py-3 text-center">Actions</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-border-subtle">
@@ -580,15 +586,25 @@ export function App() {
                               <td className="px-6 py-3.5">
                                 <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium border ${docStatusClass(doc.status)}`}>{doc.status}</span>
                               </td>
-                              <td className="px-6 py-3.5 text-right">
-                                <button
-                                  onClick={() => handleDeleteDocument(doc.id)}
-                                  className="p-2 rounded-lg text-text-muted hover:text-danger hover:bg-danger-light transition focus:outline-none"
-                                  title="Delete document"
-                                  aria-label={`Delete ${doc.filename}`}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                              <td className="px-6 py-3.5 text-center">
+                                <div className="flex items-center justify-center space-x-1">
+                                  <button
+                                    onClick={() => { setPreviewTextContent(null); setPreviewTextLoading(false); setPreviewDoc(doc); }}
+                                    className="p-2 rounded-lg text-text-muted hover:text-accent hover:bg-accent-light transition focus:outline-none"
+                                    title="View document"
+                                    aria-label={`View ${doc.filename}`}
+                                  >
+                                    <Eye className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteDocument(doc.id)}
+                                    className="p-2 rounded-lg text-text-muted hover:text-danger hover:bg-danger-light transition focus:outline-none"
+                                    title="Delete document"
+                                    aria-label={`Delete ${doc.filename}`}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))}
@@ -603,6 +619,128 @@ export function App() {
 
           {activeTab === 'bookmarks' && <BookmarksView userRole={userRole} />}
           {activeTab === 'analytics' && <AdminAnalytics userRole={userRole} />}
+
+          {/* Document Preview Modal */}
+          {previewDoc && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+              onClick={() => setPreviewDoc(null)}
+            >
+              <div
+                className="relative w-[90vw] max-w-5xl h-[85vh] bg-surface-0 rounded-2xl shadow-2xl border border-border-subtle flex flex-col overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal Header */}
+                <div className="flex items-center justify-between px-5 py-3 border-b border-border-subtle bg-surface-0 shrink-0">
+                  <div className="flex items-center space-x-2.5 min-w-0">
+                    <FileText className="w-4 h-4 text-accent shrink-0" />
+                    <span className="font-semibold text-sm text-text-main truncate">{previewDoc.filename}</span>
+                    <span className="px-2 py-0.5 text-[10px] font-mono bg-accent-light text-accent rounded shrink-0 uppercase">{previewDoc.file_type}</span>
+                  </div>
+                  <button
+                    onClick={() => setPreviewDoc(null)}
+                    className="p-2 rounded-lg text-text-muted hover:text-text-main hover:bg-surface-2 transition focus:outline-none"
+                    title="Close preview"
+                    aria-label="Close document preview"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="flex-1 overflow-hidden bg-surface-1">
+                  {(() => {
+                    const ft = previewDoc.file_type.toLowerCase();
+                    const fileUrl = `/api/documents/${previewDoc.id}/file`;
+
+                    // PDF — native browser iframe viewer
+                    if (ft === 'pdf') {
+                      return (
+                        <iframe
+                          src={fileUrl}
+                          className="w-full h-full border-0"
+                          title={`Preview of ${previewDoc.filename}`}
+                        />
+                      );
+                    }
+
+                    // Images — inline img tag
+                    if (['png', 'jpg', 'jpeg'].includes(ft)) {
+                      return (
+                        <div className="flex items-center justify-center h-full p-6 overflow-auto">
+                          <img
+                            src={fileUrl}
+                            alt={previewDoc.filename}
+                            className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
+                          />
+                        </div>
+                      );
+                    }
+
+                    // Text & CSV — fetch and display as preformatted text
+                    if (['txt'].includes(ft)) {
+                      if (previewTextContent === null && !previewTextLoading) {
+                        setPreviewTextLoading(true);
+                        fetch(fileUrl)
+                          .then((res) => res.text())
+                          .then((text) => {
+                            setPreviewTextContent(text);
+                            setPreviewTextLoading(false);
+                          })
+                          .catch(() => {
+                            setPreviewTextContent('Failed to load file content.');
+                            setPreviewTextLoading(false);
+                          });
+                      }
+                      return (
+                        <div className="h-full overflow-auto p-6">
+                          {previewTextLoading ? (
+                            <div className="flex items-center justify-center h-full">
+                              <div className="flex items-center space-x-3 text-text-muted text-sm">
+                                <div className="flex space-x-1">
+                                  <div className="w-2 h-2 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '0ms' }} />
+                                  <div className="w-2 h-2 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '150ms' }} />
+                                  <div className="w-2 h-2 rounded-full bg-text-muted animate-bounce" style={{ animationDelay: '300ms' }} />
+                                </div>
+                                <span>Loading file content...</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <pre className="bg-surface-0 border border-border-subtle rounded-xl p-5 text-sm text-text-main font-mono whitespace-pre-wrap break-words leading-relaxed overflow-auto max-h-full">
+                              {previewTextContent}
+                            </pre>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    // Office formats (docx, doc, xlsx, xls) — download fallback
+                    return (
+                      <div className="flex items-center justify-center h-full p-8">
+                        <div className="text-center space-y-4">
+                          <div className="w-16 h-16 rounded-2xl bg-surface-2 border border-border-subtle flex items-center justify-center mx-auto">
+                            <FileText className="w-8 h-8 text-text-muted" />
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-text-main text-sm font-medium">{previewDoc.filename}</p>
+                            <p className="text-text-secondary text-xs">Browser preview is not available for <strong className="font-medium text-text-main uppercase">.{ft}</strong> files.</p>
+                          </div>
+                          <a
+                            href={fileUrl}
+                            download={previewDoc.filename}
+                            className="inline-flex items-center space-x-2 px-5 py-2.5 bg-accent text-white text-sm font-medium rounded-xl hover:bg-accent/90 transition shadow-sm"
+                          >
+                            <Download className="w-4 h-4" />
+                            <span>Download File</span>
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
       </SignedIn>
