@@ -82,7 +82,21 @@ async def upload_document(
         # Run ingestion pipeline
         print(f"[Upload] Processing and ingesting: {file_path}", flush=True)
         ingest_res = process_and_ingest_file(file_path)
-        print(f"[Upload] Ingestion complete. Pages: {ingest_res.get('page_count')}, Chunks: {ingest_res.get('chunk_count')}", flush=True)
+        new_chunks = ingest_res.get("chunks", [])
+        print(f"[Upload] Ingestion complete. Pages: {ingest_res.get('page_count')}, Chunks: {len(new_chunks)}", flush=True)
+
+        # ── Fix chunk filenames to use the ORIGINAL user-facing name ─────────
+        # The parser uses os.path.basename(file_path) which includes the
+        # internal UUID prefix (e.g. "ab12..._Fullstack_AI_Engineer.pdf").
+        # Overwrite with the original filename so downstream code
+        # (compress_context, build_citations, update_chunk_metadata) shows
+        # the friendly name the user uploaded.
+        #
+        # NOTE: slicing with [-n:] works correctly only when n > 0;
+        # when n == 0, chunks[0:] would match EVERYTHING, so guard it.
+        if new_chunks:
+            for chunk in retriever_instance.chunks[-len(new_chunks):]:
+                chunk.setdefault("metadata", {})["filename"] = file.filename
 
         # Save Document to DB (get an ID so chunk FK works)
         db_doc = Document(
@@ -93,7 +107,7 @@ async def upload_document(
             file_hash=file_hex,
             file_size=file_size,
             page_count=ingest_res.get("page_count", 1),
-            chunk_count=ingest_res.get("chunk_count", 0),
+            chunk_count=len(new_chunks),
             status="completed",
             uploaded_by=current_user.get("username", "Admin")
         )
@@ -106,7 +120,7 @@ async def upload_document(
         chunk_objs: list[DocumentChunk] = []
         _pages_lookup = {p["page_number"]: p for p in ingest_res.get("_pages", [])}
 
-        for idx, c in enumerate(ingest_res.get("chunks", [])):
+        for idx, c in enumerate(new_chunks):
             page_number = c.get("page_number", 1)
             pg = _pages_lookup.get(page_number, {})
 
@@ -133,6 +147,8 @@ async def upload_document(
 
         # Update retriever chunks with their database and document IDs so
         # downstream code (citations, deletion) can reference them.
+        # Now that we've fixed metadata.filename to the original name above,
+        # this function can correctly match chunks by filename.
         retriever_instance.update_chunk_metadata(
             filename=file.filename,
             db_ids=chunk_db_ids,

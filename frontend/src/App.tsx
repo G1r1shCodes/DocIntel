@@ -192,22 +192,14 @@ export function App() {
         throw new Error('API query failed');
       }
     } catch {
-      setTimeout(() => {
         const fallbackMessage: ChatMessageItem = {
           id: generateUUID(), role: 'assistant',
-          content: 'Based on the ingested Transformer Warranty Manual, standard system warranty covers 5-year full replacement for all major core components including surge protection and oil viscosity compliance certified under ISO-9001 standards.',
-          faithfulness_status: 'FAITHFUL',
-          citations: [{
-            citation_id: 'cit_fallback_1', filename: 'Transformer_Warranty_Manual.pdf',
-            page_number: 1, heading: 'Section 4.2 - Technical Specifications', section: 'Page 1',
-            text_snippet: 'Standard system warranty includes 5-year full replacement coverage including surge protection under ISO-9001 certification.',
-            bbox: { x0: 50, y0: 120, x1: 520, y1: 180 }
-          }],
+          content: 'Sorry, I encountered an error while processing your question. This could be due to a temporary network issue or the AI service being unavailable. Please try again.\n\nIf the problem persists, ensure the backend server is running and check your API key configuration.',
+          faithfulness_status: 'INSUFFICIENT_EVIDENCE',
+          citations: [],
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages((prev) => [...prev, fallbackMessage]);
-        setActiveCitation(fallbackMessage.citations![0]);
-      }, 600);
     } finally {
       setLoading(false);
     }
@@ -217,16 +209,22 @@ export function App() {
     if (userRole !== 'Admin') { alert('Deleting documents requires Admin role privileges.'); return; }
     try {
       const token = await getToken();
-      await fetch(`/api/documents/${id}`, { 
+      const res = await fetch(`/api/documents/${id}`, { 
         method: 'DELETE', 
         headers: { 
           'X-User-Role': userRole,
           'Authorization': `Bearer ${token}`
         } 
       });
+      if (!res.ok) {
+        let errorMsg = 'Failed to delete document';
+        try { const err = await res.json(); errorMsg = err.detail || errorMsg; } catch {}
+        alert(errorMsg);
+        return;
+      }
       setDocuments((prev) => prev.filter((d) => d.id !== id));
     } catch {
-      setDocuments((prev) => prev.filter((d) => d.id !== id));
+      alert('Network error: Could not reach the server. The document was not deleted.');
     }
   };
 
@@ -442,24 +440,31 @@ export function App() {
                           </div>
                         )}
                         {(() => {
-                          if (!msg.citations || msg.citations.length === 0) {
-                            return <div className="whitespace-pre-wrap">{msg.content}</div>;
+                          const content = msg.content;
+                          const citations = msg.citations || [];
+
+                          if (citations.length === 0) {
+                            return <div className="whitespace-pre-wrap">{content}</div>;
                           }
+
+                          // Render [N] markers as clickable citation badges
                           const regex = /\[(\d+)\]/g;
-                          const parts = [];
+                          const parts: React.ReactNode[] = [];
                           let lastIndex = 0;
                           let match;
+                          let hasMarkers = false;
 
-                          while ((match = regex.exec(msg.content)) !== null) {
-                            const textBefore = msg.content.slice(lastIndex, match.index);
-                            if (textBefore) parts.push(<span key={`text-${lastIndex}`}>{textBefore}</span>);
+                          while ((match = regex.exec(content)) !== null) {
+                            hasMarkers = true;
+                            const textBefore = content.slice(lastIndex, match.index);
+                            if (textBefore) parts.push(<span key={`t-${lastIndex}`}>{textBefore}</span>);
                             
                             const citIndex = parseInt(match[1], 10) - 1;
-                            if (citIndex >= 0 && citIndex < msg.citations.length) {
-                              const cit = msg.citations[citIndex];
+                            if (citIndex >= 0 && citIndex < citations.length) {
+                              const cit = citations[citIndex];
                               parts.push(
                                 <button
-                                  key={`cit-${match.index}`}
+                                  key={`c-${match.index}`}
                                   onClick={() => setActiveCitation(cit)}
                                   className={`mx-0.5 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 rounded text-[10px] font-bold cursor-pointer transition focus:outline-none ${
                                     activeCitation?.citation_id === cit.citation_id
@@ -472,12 +477,43 @@ export function App() {
                                 </button>
                               );
                             } else {
-                              parts.push(<span key={`text-${match.index}`}>{match[0]}</span>);
+                              parts.push(<span key={`t-${match.index}`}>{match[0]}</span>);
                             }
                             lastIndex = regex.lastIndex;
                           }
-                          const textAfter = msg.content.slice(lastIndex);
-                          if (textAfter) parts.push(<span key={`text-last`}>{textAfter}</span>);
+                          const textAfter = content.slice(lastIndex);
+                          if (textAfter) parts.push(<span key={`t-last`}>{textAfter}</span>);
+
+                          // If no [N] markers were found in the content, append
+                          // citation badges at the bottom as "Sources"
+                          if (!hasMarkers) {
+                            return (
+                              <div className="whitespace-pre-wrap leading-relaxed">
+                                <div>{content}</div>
+                                <div className="mt-3 pt-2 border-t border-border-subtle">
+                                  <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Sources</span>
+                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                    {citations.map((cit, i) => (
+                                      <button
+                                        key={`cit-${i}`}
+                                        onClick={() => setActiveCitation(cit)}
+                                        className={`inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium cursor-pointer transition focus:outline-none ${
+                                          activeCitation?.citation_id === cit.citation_id
+                                            ? 'bg-accent text-white shadow-sm'
+                                            : 'bg-accent-light text-accent hover:bg-accent hover:text-white'
+                                        }`}
+                                        title={cit.filename}
+                                      >
+                                        <span className="font-bold">{i + 1}</span>
+                                        <span className="truncate max-w-[120px]">{cit.filename}</span>
+                                        <span className="opacity-70">p.{cit.page_number}</span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
 
                           return <div className="whitespace-pre-wrap leading-relaxed">{parts}</div>;
                         })()}

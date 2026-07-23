@@ -34,7 +34,17 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onUploadSuccess,
         }, 
         body: formData 
       });
-      if (!res.ok) { const errData = await res.json(); throw new Error(errData.detail || 'Upload failed'); }
+      if (!res.ok) {
+        let errorMsg = 'Upload failed';
+        try {
+          const errData = await res.json();
+          errorMsg = errData.detail || errData.message || errorMsg;
+        } catch {
+          // Response body is not JSON — read as plain text
+          try { const text = await res.text(); errorMsg = text || errorMsg; } catch {}
+        }
+        throw new Error(errorMsg);
+      }
       const data = await res.json();
       setUploadStatus({ type: 'success', message: `Parsed & Indexed "${data.filename}" (${data.page_count} pages, ${data.chunk_count} chunks)` });
       onUploadSuccess();

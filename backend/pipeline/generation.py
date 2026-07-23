@@ -1,4 +1,5 @@
 import os
+import re
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
 load_dotenv()
@@ -67,16 +68,89 @@ async def generate_llm_text(prompt: str, system_prompt: str = "You are an enterp
 
 def generate_local_response(prompt: str) -> str:
     """
-    Offline/local response synthesis derived directly from context in prompt.
+    Offline/local response synthesised directly from context.
+
+    Parses the ``[Source N: filename | Page P | heading]`` blocks produced
+    by `compress_context()` and returns a clean, concise answer with
+    ``[N]`` inline citation markers that the frontend renders as clickable
+    badges.
+
+    Note
+    ----
+    Because no remote LLM is available, the "answer" is a structured
+    presentation of the relevant source text, not a natural-language
+    response.  The frontend citation badges still work for navigation.
     """
-    if "CONTEXT:" in prompt:
-        context_part = prompt.split("CONTEXT:")[1].split("USER QUESTION:")[0] if "USER QUESTION:" in prompt else prompt
-        cleaned_lines = [line.strip() for line in context_part.splitlines() if line.strip() and not line.startswith("---") and not line.startswith("[Source:")]
-        
-        snippet = " ".join(cleaned_lines[:4]) if cleaned_lines else "the extracted document content"
-        return f"Based on the processed document context:\n\n{snippet}\n\nAll details have been verified directly against the ingested document citations."
-    
-    return "DocIntel platform is operational. Upload documents and ask specific questions to extract verified answers with citations."
+    if "CONTEXT:" not in prompt:
+        return (
+            "DocIntel platform is operational. Upload documents and ask "
+            "specific questions to get AI-powered answers with citations."
+        )
+
+    # ── Extract context block and user question ────────────────────────
+    try:
+        context_block = prompt.split("CONTEXT:")[1]
+        if "USER QUESTION:" in context_block:
+            parts = context_block.split("USER QUESTION:")
+            context_text = parts[0].strip()
+            user_question = parts[1].strip() if len(parts) > 1 else ""
+        else:
+            context_text = context_block.strip()
+            user_question = ""
+    except (IndexError, ValueError):
+        context_text = ""
+        user_question = prompt
+
+    if not context_text:
+        return (
+            "I couldn't find any document context to answer your question. "
+            "Please try uploading a relevant document first."
+        )
+
+    # ── Parse [Source N: filename | Page P | heading] blocks ───────────
+    source_pattern = re.compile(
+        r'\[Source (\d+):\s*([^|]+)\|\s*Page\s*(\d+)\s*\|\s*([^\]]+)\]\s*\n(.+?)(?=\n\n---\n\n|\Z)',
+        re.DOTALL,
+    )
+
+    sources = []
+    for match in source_pattern.finditer(context_text):
+        sources.append({
+            "idx": int(match.group(1)),
+            "filename": match.group(2).strip(),
+            "page": int(match.group(3)),
+            "heading": match.group(4).strip(),
+            "text": match.group(5).strip(),
+        })
+
+    if not sources:
+        # Could not parse structured blocks — show raw context as fallback
+        clean = re.sub(r'^\[Source[^\]]+\]\s*\n', '', context_text, flags=re.MULTILINE)
+        return (
+            f"Here is what I found in the retrieved documents:\n\n"
+            f"{clean[:600]}{'...' if len(clean) > 600 else ''}"
+        )
+
+    # ── Concise answer with inline [1], [2] markers ───────────────────
+    evidence = []
+    for s in sources:
+        text = s["text"]
+        snip = text[:400]
+        if len(text) > 400:
+            snip += "..."
+        evidence.append(
+            f"[{s['idx']}] From **{s['filename']}** (Page {s['page']}, {s['heading']}):\n"
+            f"{snip}"
+        )
+
+    # If there's a user question, prepend a brief acknowledgment
+    header = f"Based on the document{'' if len(sources) == 1 else 's'} retrieved, "
+    if user_question:
+        header += f"here is relevant information regarding your query:\n\n"
+    else:
+        header += f"here are the relevant excerpts:\n\n"
+
+    return header + "\n\n---\n\n".join(evidence)
 
 
 async def run_guardrails(query: str) -> Tuple[bool, str]:
@@ -93,9 +167,16 @@ async def run_guardrails(query: str) -> Tuple[bool, str]:
 async def run_query_rewrite(query: str) -> str:
     """
     Rewrites user query to optimize hybrid vector & keyword retrieval.
+
+    Previously appended generic technical jargon ("detailed specifications
+    technical document parameters") to short queries, which biased results
+    toward technical manuals and made the system useless for non-technical
+    content like resumes, HR documents, or general business files.
+
+    Now simply returns the original query unchanged — modern embedding
+    models (BGE / all-MiniLM) handle short queries well, and BM25 keyword
+    matching works naturally without artificial expansion.
     """
-    if len(query.split()) < 3:
-        return f"{query} detailed specifications technical document parameters"
     return query
 
 

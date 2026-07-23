@@ -90,9 +90,12 @@ async def process_chat_query(
 
     # 3. Query Rewrite
     rewritten_query = await run_query_rewrite(user_query)
+    t_rewrite = time.time()
 
     # 4. Hybrid Retrieval & Re-ranking (FAISS + BM25 -> Top 30 -> Top 5 Reranked)
     retrieved_chunks = retriever_instance.hybrid_search(rewritten_query, top_k_dense=20, top_k_sparse=20, top_n_rerank=5)
+    t_retrieval = time.time()
+    print(f"[Chat] Retrieval took {t_retrieval - t_rewrite:.2f}s, found {len(retrieved_chunks)} chunks", flush=True)
 
     if not retrieved_chunks:
         answer_text = "No relevant documents have been uploaded or matched your query. Please upload document files first."
@@ -122,19 +125,26 @@ async def process_chat_query(
         "where the numbers correspond to the Source number of the provided context."
     )
     llm_prompt = f"CONTEXT:\n{compressed_context}\n\nUSER QUESTION: {user_query}"
+    t_gen_start = time.time()
     raw_answer = await generate_llm_text(llm_prompt, system_prompt=system_prompt)
+    t_gen_end = time.time()
+    print(f"[Chat] LLM generation took {t_gen_end - t_gen_start:.2f}s", flush=True)
 
     # 7. Faithfulness Check
+    t_faith_start = time.time()
     is_faithful, final_answer = await check_faithfulness(
         raw_answer,
         retrieved_chunks,
         lambda p, system_prompt: generate_llm_text(p, system_prompt=system_prompt)
     )
+    t_faith_end = time.time()
+    print(f"[Chat] Faithfulness check took {t_faith_end - t_faith_start:.2f}s, result: {is_faithful}", flush=True)
 
     faithfulness_status = "FAITHFUL" if is_faithful else "INSUFFICIENT_EVIDENCE"
 
     # 8. Build Citations
     citations_data = build_citations(retrieved_chunks)
+    print(f"[Chat] Built {len(citations_data)} citations", flush=True)
 
     # Save Assistant Message to DB
     bot_msg = ChatMessage(
