@@ -1,0 +1,6 @@
+INFO:     Started server process [15872]
+INFO:     Waiting for application startup.
+Initializing embedding models and loading indexes...
+Startup complete: models + index loaded.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8002 (Press CTRL+C to quit)

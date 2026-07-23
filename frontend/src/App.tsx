@@ -452,10 +452,8 @@ export function App() {
                           const parts: React.ReactNode[] = [];
                           let lastIndex = 0;
                           let match;
-                          let hasMarkers = false;
 
                           while ((match = regex.exec(content)) !== null) {
-                            hasMarkers = true;
                             const textBefore = content.slice(lastIndex, match.index);
                             if (textBefore) parts.push(<span key={`t-${lastIndex}`}>{textBefore}</span>);
                             
@@ -484,38 +482,35 @@ export function App() {
                           const textAfter = content.slice(lastIndex);
                           if (textAfter) parts.push(<span key={`t-last`}>{textAfter}</span>);
 
-                          // If no [N] markers were found in the content, append
-                          // citation badges at the bottom as "Sources"
-                          if (!hasMarkers) {
-                            return (
-                              <div className="whitespace-pre-wrap leading-relaxed">
-                                <div>{content}</div>
-                                <div className="mt-3 pt-2 border-t border-border-subtle">
-                                  <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Sources</span>
-                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
-                                    {citations.map((cit, i) => (
-                                      <button
-                                        key={`cit-${i}`}
-                                        onClick={() => setActiveCitation(cit)}
-                                        className={`inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium cursor-pointer transition focus:outline-none ${
-                                          activeCitation?.citation_id === cit.citation_id
-                                            ? 'bg-accent text-white shadow-sm'
-                                            : 'bg-accent-light text-accent hover:bg-accent hover:text-white'
-                                        }`}
-                                        title={cit.filename}
-                                      >
-                                        <span className="font-bold">{i + 1}</span>
-                                        <span className="truncate max-w-[120px]">{cit.filename}</span>
-                                        <span className="opacity-70">p.{cit.page_number}</span>
-                                      </button>
-                                    ))}
-                                  </div>
+                          // Always show Sources section at the bottom when citations exist
+                          return (
+                            <div className="whitespace-pre-wrap leading-relaxed">
+                              <div>{parts}</div>
+                              <div className="mt-3 pt-2 border-t border-border-subtle">
+                                <span className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">
+                                  Sources
+                                </span>
+                                <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                  {citations.map((cit, i) => (
+                                    <button
+                                      key={`src-${i}`}
+                                      onClick={() => setActiveCitation(cit)}
+                                      className={`inline-flex items-center gap-1 px-2 py-1 rounded text-[11px] font-medium cursor-pointer transition focus:outline-none ${
+                                        activeCitation?.citation_id === cit.citation_id
+                                          ? 'bg-accent text-white shadow-sm'
+                                          : 'bg-accent-light text-accent hover:bg-accent hover:text-white'
+                                      }`}
+                                      title={cit.filename}
+                                    >
+                                      <span className="font-bold">{i + 1}</span>
+                                      <span className="truncate max-w-[120px]">{cit.filename}</span>
+                                      <span className="opacity-70">p.{cit.page_number}</span>
+                                    </button>
+                                  ))}
                                 </div>
                               </div>
-                            );
-                          }
-
-                          return <div className="whitespace-pre-wrap leading-relaxed">{parts}</div>;
+                            </div>
+                          );
                         })()}
                       </div>
                       {msg.role === 'user' && (

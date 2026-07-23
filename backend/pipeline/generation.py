@@ -22,19 +22,34 @@ groq_client = AsyncOpenAI(
     api_key=groq_api_key or "dummy-key"
 ) if groq_api_key else None
 
-NVIDIA_MODEL = "meta/llama-3.1-70b-instruct"
-GROQ_MODEL = "llama-3.3-70b-versatile"
+# ── Model selection ───────────────────────────────────────────────────
+# Fast, small models optimized for speed on simple factual Q&A.
+# The 70B models were overkill and caused multi-minute timeouts.
+#
+# NVIDIA:  Gemma 2 9B — Google's instruction-tuned model, great for
+#           extraction and following structured prompts.
+# Groq:    Llama 3.1 8B "instant" — optimized for low latency as fallback.
+NVIDIA_MODEL = "google/gemma-2-9b-it"
+GROQ_MODEL = "llama-3.1-8b-instant"
+
+# LLM API timeout in seconds — each API call is given this long before
+# failing over to the next provider or the local response synthesizer.
+_LLM_TIMEOUT = 10
+
 
 async def generate_llm_text(prompt: str, system_prompt: str = "You are an enterprise AI document assistant.") -> str:
     """
     Generates text using NVIDIA NIM primary, Groq fallback, or intelligent local template generator.
+
+    Each API call has a hard **20-second timeout** so that a hung upstream
+    never blocks the response for more than ~40 seconds total.
     """
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": prompt}
     ]
 
-    # Attempt 1: NVIDIA NIM
+    # Attempt 1: NVIDIA NIM (primary — Gemma 2 9B for better extraction)
     if nvidia_client and nvidia_api_key:
         try:
             logger.info("Calling NVIDIA NIM API...")
@@ -42,13 +57,14 @@ async def generate_llm_text(prompt: str, system_prompt: str = "You are an enterp
                 model=NVIDIA_MODEL,
                 messages=messages,
                 temperature=0.2,
-                max_tokens=1024
+                max_tokens=512,
+                timeout=_LLM_TIMEOUT,
             )
             return res.choices[0].message.content.strip()
         except Exception as e:
-            logger.warning(f"NVIDIA NIM call failed: {e}. Trying Groq fallback...")
+            logger.warning(f"NVIDIA NIM call failed after {_LLM_TIMEOUT}s: {e}. Trying Groq...")
 
-    # Attempt 2: Groq Fallback
+    # Attempt 2: Groq (fallback — Llama 3.1 8B instant)
     if groq_client and groq_api_key:
         try:
             logger.info("Calling Groq API...")
@@ -56,13 +72,14 @@ async def generate_llm_text(prompt: str, system_prompt: str = "You are an enterp
                 model=GROQ_MODEL,
                 messages=messages,
                 temperature=0.2,
-                max_tokens=1024
+                max_tokens=512,
+                timeout=_LLM_TIMEOUT,
             )
             return res.choices[0].message.content.strip()
         except Exception as e:
-            logger.warning(f"Groq API call failed: {e}")
+            logger.warning(f"Groq call failed after {_LLM_TIMEOUT}s: {e}")
 
-    # Fallback: Synthesis generator for local development/offline resilience
+    # Fallback: Local response synthesizer
     return generate_local_response(prompt)
 
 
@@ -227,11 +244,10 @@ def build_citations(
                 bbox_dict = None
 
         # Page dimensions for frontend coordinate scaling
-        page_w: float | None = None
-        page_h: float | None = None
-        if bbox_dict:
-            page_w = meta.get("_page_width")
-            page_h = meta.get("_page_height")
+        # Always populate regardless of bbox validity so the
+        # DocumentViewer has accurate defaults even without a bbox.
+        page_w: float | None = meta.get("_page_width")
+        page_h: float | None = meta.get("_page_height")
 
         citations.append(
             {

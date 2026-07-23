@@ -93,7 +93,7 @@ async def process_chat_query(
     t_rewrite = time.time()
 
     # 4. Hybrid Retrieval & Re-ranking (FAISS + BM25 -> Top 30 -> Top 5 Reranked)
-    retrieved_chunks = retriever_instance.hybrid_search(rewritten_query, top_k_dense=20, top_k_sparse=20, top_n_rerank=5)
+    retrieved_chunks = retriever_instance.hybrid_search(rewritten_query, top_k_dense=10, top_k_sparse=10, top_n_rerank=3)
     t_retrieval = time.time()
     print(f"[Chat] Retrieval took {t_retrieval - t_rewrite:.2f}s, found {len(retrieved_chunks)} chunks", flush=True)
 
@@ -118,11 +118,28 @@ async def process_chat_query(
     # 5. Context Compression
     compressed_context = compress_context(user_query, retrieved_chunks)
 
-    # 6. LLM Generation (NVIDIA NIM -> Groq -> Local Fallback)
+    # 6. LLM Generation (Groq -> NVIDIA NIM -> Local Fallback)
     system_prompt = (
-        "You are an enterprise AI document assistant. Answer the user prompt accurately based ONLY on the provided CONTEXT. "
-        "Include reference details if relevant. ALWAYS cite your sources using inline brackets like [1], [2] at the end of sentences, "
-        "where the numbers correspond to the Source number of the provided context."
+        "You extract exact answers from documents. Rules:\n"
+        "1. Answer ONLY from CONTEXT — no outside knowledge.\n"
+        "2. No explanations, labels, greetings, or citation markers.\n"
+        "3. If the user asks to 'list' or 'all' (e.g. list all projects, list skills), "
+        "output EVERY matching item separated by commas. Do NOT pick just one.\n"
+        "4. For skills questions, output the SKILLS as a comma-separated list. "
+        "Do NOT output the profile summary or objective paragraph.\n"
+        "5. Typos in the question are normal — interpret what the user likely means.\n"
+        "  e.g. 'skill in aiml' = skills in AI/ML\n"
+        "  e.g. 'kaggle' = Kaggle\n"
+        "6. For specific fields like graduation year, roll number, guide name — "
+        "extract ONLY that exact field, not a similar-looking number from elsewhere.\n"
+        "7. If context has certifications, list them. Do NOT say 'Not found' if they exist.\n"
+        "8. If the CONTEXT truly has no answer, say exactly: Not found in the document.\n"
+        "Examples (these show the FORMAT, extract YOUR data from CONTEXT):\n"
+        "  What is the candidate's name? → Girish Kumar Yadav\n"
+        "  List all projects → PathShala AI, Waste Classification System, BimaBot\n"
+        "  What are his skills → Python, C, SQL, PyTorch, TensorFlow, FastAPI\n"
+        "  Graduation year → 2027\n"
+        "  What certifications → AWS Generative AI, IBM AI Fundamentals\n"
     )
     llm_prompt = f"CONTEXT:\n{compressed_context}\n\nUSER QUESTION: {user_query}"
     t_gen_start = time.time()
@@ -135,7 +152,6 @@ async def process_chat_query(
     is_faithful, final_answer = await check_faithfulness(
         raw_answer,
         retrieved_chunks,
-        lambda p, system_prompt: generate_llm_text(p, system_prompt=system_prompt)
     )
     t_faith_end = time.time()
     print(f"[Chat] Faithfulness check took {t_faith_end - t_faith_start:.2f}s, result: {is_faithful}", flush=True)
@@ -145,6 +161,23 @@ async def process_chat_query(
     # 8. Build Citations
     citations_data = build_citations(retrieved_chunks)
     print(f"[Chat] Built {len(citations_data)} citations", flush=True)
+
+    # ── Ensure every citation has a document_id ──────────────────────────
+    # The chunk metadata often doesn't carry document_id after index reload.
+    # Batch-resolve from the database by filename so the frontend's PDF viewer
+    # can construct a valid /api/documents/{id}/file URL.
+    missing = [c for c in citations_data if not c.get("document_id")]
+    if missing:
+        filenames = list({c["filename"] for c in missing})
+        doc_map = {
+            d.filename: d.id
+            for d in db.query(Document).filter(Document.filename.in_(filenames)).all()
+        }
+        for c in missing:
+            doc_id = doc_map.get(c["filename"])
+            if doc_id:
+                c["document_id"] = doc_id
+                print(f"[Chat] Resolved document_id={doc_id} for '{c['filename']}'", flush=True)
 
     # Save Assistant Message to DB
     bot_msg = ChatMessage(

@@ -302,10 +302,13 @@ async def get_document_file(
         raise HTTPException(status_code=404, detail="Document not found")
     if not doc.file_path or not os.path.exists(doc.file_path):
         raise HTTPException(status_code=404, detail="File not found on disk")
+
+    media_type = "application/pdf" if doc.file_type == "pdf" else "application/octet-stream"
     return FileResponse(
         path=doc.file_path,
         filename=doc.filename,
-        media_type="application/pdf" if doc.file_type == "pdf" else "application/octet-stream",
+        media_type=media_type,
+        headers={"Content-Disposition": f'inline; filename="{doc.filename}"'},
     )
 
 

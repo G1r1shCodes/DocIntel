@@ -172,7 +172,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
       {/* ── Document canvas ────────────────────────────────────────── */}
       <div className="relative flex-1 overflow-auto bg-surface-1" ref={measuredRef}>
         {/* If we have a real PDF URL, embed it via <object> */}
-        {isPdf ? (
+        {isPdf && pdfUrl ? (
           <div
             className="absolute inset-0 transition-transform duration-200 origin-top-left"
             style={{ transform: `scale(${zoom / 100})` }}
