@@ -79,9 +79,9 @@ async def upload_document(
     file_hex = file_hash.hexdigest()
 
     try:
-        # Run ingestion pipeline
+        # Run ingestion pipeline in a thread worker so it doesn't freeze the asyncio event loop
         print(f"[Upload] Processing and ingesting: {file_path}", flush=True)
-        ingest_res = process_and_ingest_file(file_path)
+        ingest_res = await asyncio.to_thread(process_and_ingest_file, file_path)
         new_chunks = ingest_res.get("chunks", [])
         print(f"[Upload] Ingestion complete. Pages: {ingest_res.get('page_count')}, Chunks: {len(new_chunks)}", flush=True)
 
