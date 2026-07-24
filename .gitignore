@@ -21,6 +21,29 @@ backend/uploads/
 uploads/
 *.log
 
+# Environment files
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+env/
+.venv/
+*.db
+*.sqlite3
+
+# Document Uploads & Temp files
+backend/uploads/
+uploads/
+*.log
+
 # Node & Frontend
 node_modules/
 frontend/node_modules/
@@ -29,3 +52,5 @@ frontend/dist-ssr/
 .DS_Store
 backend/index_data/faiss.index
 backend/index_data/retriever_data.pkl
+nul
+backend/nul

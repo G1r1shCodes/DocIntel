@@ -109,7 +109,7 @@ Heading  -->  Section  -->  Paragraph  -->  Sentence
 > Generated LLM answers are subjected to an automated NLI claim-grounding audit. Answers unsupported by retrieved context passages are automatically flagged with `INSUFFICIENT_EVIDENCE`.
 
 ### 5. Interactive PDF Bounding Box Citation Renderer
-Clicking any citation pill in the chat UI (`Manual.pdf | Page 21 | Section 4`) automatically opens the PDF in the embedded viewer and draws an animated glowing bounding box (`bbox`) overlay around the cited source snippet.
+Clicking any citation pill in the chat UI (`Manual.pdf | Page 21 | Section 4`) automatically requests the backend to open the PDF with `PyMuPDF`, draw an animated glowing bounding box (`bbox`) overlay perfectly around the cited source snippet, and streams it instantly to the embedded frontend viewer.
 
 ---
 
@@ -253,7 +253,7 @@ venv\Scripts\activate
 source venv/bin/activate
 
 pip install -r requirements.txt
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn main:app --reload --host 0.0.0.0 --port 8002
 ```
 
 **Frontend:**
@@ -263,7 +263,7 @@ npm install
 npm run dev
 ```
 
-The application frontend will open at `http://localhost:5173` and connect to the FastAPI backend server running on `http://localhost:8000`.
+The application frontend will open at `http://localhost:5173` and connect to the FastAPI backend server running on `http://localhost:8002`.
 
 ---
 
