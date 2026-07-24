@@ -12,7 +12,10 @@ import os
 import pickle
 import logging
 from pathlib import Path
-from typing import Any, List, Dict
+from typing import TYPE_CHECKING, Any, List, Dict
+
+if TYPE_CHECKING:
+    from sentence_transformers import SentenceTransformer, CrossEncoder
 
 import numpy as np
 
@@ -22,8 +25,8 @@ logger = logging.getLogger(__name__)
 # Lazy model initialisation
 # ---------------------------------------------------------------------------
 
-_embedder: SentenceTransformer | None = None
-_cross_encoder: CrossEncoder | None = None
+_embedder: Any = None
+_cross_encoder: Any = None
 
 _INDEX_DIR = os.environ.get(
     "DOCINTEL_INDEX_DIR",
