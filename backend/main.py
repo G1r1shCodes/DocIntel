@@ -42,12 +42,18 @@ app.add_middleware(
 # Mount uploaded files static directory so frontend can fetch PDFs for inline display
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-@app.on_event("startup")
-async def startup_event():
+import asyncio
+
+async def background_init():
     print("Initializing embedding models and loading indexes...", flush=True)
     get_embedder()
     retriever_instance.load()
     print("Startup complete: models + index loaded.", flush=True)
+
+@app.on_event("startup")
+async def startup_event():
+    # Run in background so Uvicorn can immediately bind the port for health checks
+    asyncio.create_task(background_init())
 
 @app.on_event("shutdown")
 async def shutdown_event():
