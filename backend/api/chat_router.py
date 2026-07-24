@@ -93,7 +93,7 @@ async def process_chat_query(
     t_rewrite = time.time()
 
     # 4. Hybrid Retrieval & Re-ranking (FAISS + BM25 -> Top 30 -> Top 5 Reranked)
-    retrieved_chunks = retriever_instance.hybrid_search(rewritten_query, top_k_dense=10, top_k_sparse=10, top_n_rerank=3)
+    retrieved_chunks = retriever_instance.hybrid_search(rewritten_query, top_k_dense=10, top_k_sparse=10, top_n_rerank=5)
     t_retrieval = time.time()
     print(f"[Chat] Retrieval took {t_retrieval - t_rewrite:.2f}s, found {len(retrieved_chunks)} chunks", flush=True)
 

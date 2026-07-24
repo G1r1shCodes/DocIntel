@@ -26,13 +26,13 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onUploadSuccess,
     formData.append('file', file);
     try {
       const token = await getToken();
-      const res = await fetch('/api/documents/upload', { 
-        method: 'POST', 
-        headers: { 
+      const res = await fetch('/api/documents/upload', {
+        method: 'POST',
+        headers: {
           'X-User-Role': userRole,
-          'Authorization': `Bearer ${token}` 
-        }, 
-        body: formData 
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
       });
       if (!res.ok) {
         let errorMsg = 'Upload failed';
@@ -41,7 +41,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onUploadSuccess,
           errorMsg = errData.detail || errData.message || errorMsg;
         } catch {
           // Response body is not JSON — read as plain text
-          try { const text = await res.text(); errorMsg = text || errorMsg; } catch {}
+          try { const text = await res.text(); errorMsg = text || errorMsg; } catch { }
         }
         throw new Error(errorMsg);
       }
@@ -73,9 +73,8 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onUploadSuccess,
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={(e) => { e.preventDefault(); setIsDragging(false); if (e.dataTransfer.files) handleFileUpload(e.dataTransfer.files); }}
-        className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${
-          isDragging ? 'border-accent bg-accent-light' : 'border-border-strong bg-surface-1 hover:border-accent hover:bg-accent-light/50'
-        }`}
+        className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${isDragging ? 'border-accent bg-accent-light' : 'border-border-strong bg-surface-1 hover:border-accent hover:bg-accent-light/50'
+          }`}
       >
         <input type="file" accept=".pdf,.docx,.doc,.xlsx,.xls,.csv,.txt,.png,.jpg,.jpeg" className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => e.target.files && handleFileUpload(e.target.files)} disabled={uploading} aria-label="Upload document file" />
         {uploading ? (
@@ -98,9 +97,8 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onUploadSuccess,
       </div>
 
       {uploadStatus && (
-        <div className={`mt-4 p-3 rounded-lg border text-xs flex items-center space-x-2 ${
-          uploadStatus.type === 'success' ? 'bg-success-light border-emerald-200 text-success' : 'bg-danger-light border-red-200 text-danger'
-        }`}>
+        <div className={`mt-4 p-3 rounded-lg border text-xs flex items-center space-x-2 ${uploadStatus.type === 'success' ? 'bg-success-light border-emerald-200 text-success' : 'bg-danger-light border-red-200 text-danger'
+          }`}>
           {uploadStatus.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
           <span>{uploadStatus.message}</span>
         </div>

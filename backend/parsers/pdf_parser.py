@@ -27,9 +27,49 @@ class PDFParser(BaseParser):
     MIN_NATIVE_CHARS: int = 30
     #: DPI used when rendering pages for OCR.
     OCR_DPI: int = 150
+    #: Minimum font size to consider text a heading.
+    HEADING_FONT_SIZE: float = 11.0
+    #: Max character length for ALL-CAPS heading detection.
+    HEADING_ALL_CAPS_MAX_LEN: int = 60
 
     def supported_extensions(self) -> list[str]:
         return [".pdf"]
+
+    @staticmethod
+    def _classify_heading_block(block: dict, spans: list[dict]) -> bool:
+        """
+        Determine whether a text block should be classified as a heading.
+
+        Uses multiple heuristics:
+        * Font size above threshold
+        * ALL-CAPS and short (common resume section headers like EDUCATION, EXPERIENCE)
+        * Bold text (short blocks only, to avoid marking bold body text)
+        """
+        full_text = " ".join(s.get("text", "") for s in spans).strip()
+        if not full_text:
+            return False
+
+        max_font_size = max((s.get("size", 0) for s in spans), default=0)
+
+        # Criterion 1: Large font
+        if max_font_size > PDFParser.HEADING_FONT_SIZE:
+            return True
+
+        # Criterion 2: ALL CAPS and short (resume section headers)
+        alpha_stripped = full_text.replace(" ", "")
+        if (
+            alpha_stripped.isupper()
+            and len(alpha_stripped) > 2
+            and len(full_text) <= PDFParser.HEADING_ALL_CAPS_MAX_LEN
+        ):
+            return True
+
+        # Criterion 3: Fully bold block and short (≤ 5 words)
+        bold_flags = [s.get("flags", 0) & 16 for s in spans]
+        if bold_flags and all(bold_flags) and len(full_text.split()) <= 5:
+            return True
+
+        return False
 
     def parse(self, file_path: str) -> DocumentData:
         filename = os.path.basename(file_path)
@@ -91,23 +131,32 @@ class PDFParser(BaseParser):
                 for block in text_dict.get("blocks", []):
                     if block.get("type") != 0:  # 0 = text block
                         continue
-                    block_text_parts: list[str] = []
+                    # Collect all spans for this block
+                    all_spans: list[dict] = []
                     for line in block.get("lines", []):
                         for span in line.get("spans", []):
-                            span_text = span.get("text", "")
-                            block_text_parts.append(span_text)
-                            # Heading detection by font size
-                            if span.get("size", 0) > 13 and span_text.strip():
-                                headings.append(span_text.strip())
-                    joined = " ".join(block_text_parts).strip()
-                    if joined:
-                        blocks_data.append(
-                            {
-                                "text": joined,
-                                "bbox": block.get("bbox", (0, 0, 0, 0)),
-                                "type": "paragraph",
-                            }
-                        )
+                            all_spans.append(span)
+
+                    joined = " ".join(
+                        s.get("text", "") for s in all_spans
+                    ).strip()
+                    if not joined:
+                        continue
+
+                    # Classify block as heading or paragraph
+                    is_heading = self._classify_heading_block(block, all_spans)
+                    block_type = "heading" if is_heading else "paragraph"
+
+                    if is_heading:
+                        headings.append(joined)
+
+                    blocks_data.append(
+                        {
+                            "text": joined,
+                            "bbox": block.get("bbox", (0, 0, 0, 0)),
+                            "type": block_type,
+                        }
+                    )
 
             # Guard: ensure at least a paragraph block exists
             if not blocks_data and text.strip():
