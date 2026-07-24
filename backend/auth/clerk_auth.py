@@ -62,22 +62,25 @@ def get_current_user_from_token(
         if not rsa_key:
             raise HTTPException(status_code=401, detail="Invalid key ID in token")
             
-        issuer = os.environ.get("CLERK_ISSUER")
+        issuer = (os.environ.get("CLERK_ISSUER") or "").rstrip("/")
         payload = jwt.decode(
             token,
             rsa_key,
             algorithms=["RS256"],
-            issuer=issuer,
-            options={"verify_aud": False}
+            options={"verify_aud": False, "verify_iss": False}
         )
         
+        token_iss = (payload.get("iss") or "").rstrip("/")
+        if issuer and token_iss and token_iss != issuer:
+            print(f"[Auth] Issuer mismatch: token={token_iss}, expected={issuer}", flush=True)
+            raise HTTPException(status_code=401, detail="Issuer mismatch")
+
         user_id = payload.get("sub")
         if not user_id:
+            print("[Auth] Missing sub claim in token", flush=True)
             raise HTTPException(status_code=401, detail="Invalid token payload: missing sub")
             
         # Extract role securely from the JWT metadata
-        # Clerk stores publicMetadata in the payload (usually just flat or under `public_metadata`)
-        # It depends on how Clerk's JWT template is configured. We check a few standard places:
         jwt_role = payload.get("role") or payload.get("org_role")
         if not jwt_role and "public_metadata" in payload:
             jwt_role = payload["public_metadata"].get("role")
@@ -88,12 +91,15 @@ def get_current_user_from_token(
             role = jwt_role
 
     except jwt.ExpiredSignatureError:
+        print("[Auth] Token has expired", flush=True)
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.JWTClaimsError as e:
+        print(f"[Auth] Invalid claims: {e}", flush=True)
         raise HTTPException(status_code=401, detail=f"Invalid claims: {e}")
     except Exception as e:
+        print(f"[Auth] Clerk JWT validation failed: {e}", flush=True)
         logger.warning(f"Clerk JWT validation failed: {e}")
-        raise HTTPException(status_code=401, detail="Invalid authentication token")
+        raise HTTPException(status_code=401, detail=f"Invalid authentication token: {e}")
 
     return {
         "user_id": user_id,
