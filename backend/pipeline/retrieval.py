@@ -34,11 +34,17 @@ _INDEX_DIR = os.environ.get(
 def get_embedder():
     global _embedder
     if _embedder is None:
-        from sentence_transformers import SentenceTransformer
         try:
-            _embedder = SentenceTransformer("BAAI/bge-small-en-v1.5")
+            import torch
+            torch.set_num_threads(1)
+        except Exception:
+            pass
+        from sentence_transformers import SentenceTransformer
+        model_name = os.environ.get("EMBEDDING_MODEL_NAME", "all-MiniLM-L6-v2")
+        try:
+            _embedder = SentenceTransformer(model_name)
         except Exception as exc:
-            logger.warning("Could not load BGE model, using all-MiniLM-L6-v2 fallback: %s", exc)
+            logger.warning("Could not load %s model, using all-MiniLM-L6-v2 fallback: %s", model_name, exc)
             _embedder = SentenceTransformer("all-MiniLM-L6-v2")
     return _embedder
 
@@ -46,11 +52,17 @@ def get_embedder():
 def get_cross_encoder():
     global _cross_encoder
     if _cross_encoder is None:
-        from sentence_transformers import CrossEncoder
         try:
-            _cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+            import torch
+            torch.set_num_threads(1)
+        except Exception:
+            pass
+        from sentence_transformers import CrossEncoder
+        model_name = os.environ.get("CROSS_ENCODER_MODEL_NAME", "cross-encoder/ms-marco-MiniLM-L-6-v2")
+        try:
+            _cross_encoder = CrossEncoder(model_name)
         except Exception as exc:
-            logger.warning("Could not load CrossEncoder: %s", exc)
+            logger.warning("Could not load CrossEncoder %s: %s", model_name, exc)
     return _cross_encoder
 
 
