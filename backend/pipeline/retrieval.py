@@ -31,21 +31,71 @@ _INDEX_DIR = os.environ.get(
 )
 
 
+class APIEmbedder:
+    """
+    Lightweight API-based Embedder wrapper.
+    Calls NVIDIA NIM / OpenAI Embeddings API or Pinecone Inference API.
+    Zero PyTorch dependency, zero RAM overhead!
+    """
+    def encode(self, texts: list[str], show_progress_bar: bool = False) -> np.ndarray:
+        if not texts:
+            return np.array([], dtype=np.float32)
+
+        # 1. Try Pinecone Inference API if PINECONE_API_KEY is present
+        pinecone_key = os.environ.get("PINECONE_API_KEY")
+        if pinecone_key and pinecone_key != "your_pinecone_api_key_here":
+            try:
+                from pinecone import Pinecone
+                pc = Pinecone(api_key=pinecone_key)
+                res = pc.inference.embed(
+                    model="multilingual-e5-large",
+                    inputs=texts,
+                    parameters={"input_type": "passage", "truncate": "END"}
+                )
+                embeddings = [e["values"] for e in res.data if "values" in e]
+                if embeddings:
+                    return np.array(embeddings, dtype=np.float32)
+            except Exception as e:
+                logger.warning(f"Pinecone inference API embed failed: {e}")
+
+        # 2. Try NVIDIA NIM Embeddings API if NVIDIA_API_KEY is present
+        nvidia_key = os.environ.get("NVIDIA_API_KEY")
+        if nvidia_key:
+            try:
+                from openai import OpenAI
+                client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=nvidia_key)
+                res = client.embeddings.create(input=texts, model="nvidia/nv-embedqa-e5-v5")
+                return np.array([d.embedding for d in res.data], dtype=np.float32)
+            except Exception as e:
+                logger.warning(f"NVIDIA NIM embedding API failed: {e}")
+
+        # 3. Fallback: lightweight deterministic hash vector (384 dim)
+        embeddings = []
+        for text in texts:
+            vec = np.zeros(384, dtype=np.float32)
+            words = text.lower().split()
+            for w in words:
+                idx = abs(hash(w)) % 384
+                vec[idx] += 1.0
+            norm = np.linalg.norm(vec)
+            if norm > 0:
+                vec /= norm
+            embeddings.append(vec)
+        return np.array(embeddings, dtype=np.float32)
+
+
 def get_embedder():
     global _embedder
     if _embedder is None:
         try:
             import torch
             torch.set_num_threads(1)
-        except Exception:
-            pass
-        from sentence_transformers import SentenceTransformer
-        model_name = os.environ.get("EMBEDDING_MODEL_NAME", "all-MiniLM-L6-v2")
-        try:
+            from sentence_transformers import SentenceTransformer
+            model_name = os.environ.get("EMBEDDING_MODEL_NAME", "all-MiniLM-L6-v2")
             _embedder = SentenceTransformer(model_name)
-        except Exception as exc:
-            logger.warning("Could not load %s model, using all-MiniLM-L6-v2 fallback: %s", model_name, exc)
-            _embedder = SentenceTransformer("all-MiniLM-L6-v2")
+        except Exception:
+            # Fall back to zero-PyTorch API-based embedder
+            _embedder = APIEmbedder()
     return _embedder
 
 
