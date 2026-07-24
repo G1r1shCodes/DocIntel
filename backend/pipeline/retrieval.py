@@ -16,6 +16,8 @@ from typing import Any, List, Dict
 
 import numpy as np
 
+logger = logging.getLogger(__name__)
+
 # ---------------------------------------------------------------------------
 # Lazy model initialisation
 # ---------------------------------------------------------------------------
