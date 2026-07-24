@@ -202,8 +202,9 @@ class HybridRetriever:
         if kept:
             texts = [c["text"] for c in kept]
             self.bm25_index = BM25Okapi([t.lower().split() for t in texts])
-        else:        self.chunks.clear()
-        self.bm25_index = None
+        else:
+            self.chunks.clear()
+            self.bm25_index = None
 
         self._save()
         logger.info("Removed %d chunks for document_id=%d", len(to_remove), document_id)
@@ -319,7 +320,8 @@ class HybridRetriever:
             with open(self._data_path(), "wb") as f:
                 pickle.dump(data, f, protocol=pickle.HIGHEST_PROTOCOL)
         except Exception as exc:
-            logger.error("Failed to persist retriever index: %s", exc)
+            logger.error("Failed to persist retriever index: %s", exc, exc_info=True)
+            raise
 
     def load(self) -> None:
         """

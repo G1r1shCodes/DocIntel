@@ -376,9 +376,17 @@ def delete_document(
 
     # Remove from hybrid retriever — prefer document_id when available,
     # fall back to filename for chunks indexed before Phase 2 migration.
-    removed = retriever_instance.remove_chunks_by_document_id(doc_id)
-    if not removed:
-        retriever_instance.remove_chunks_by_filename(filename)
+    try:
+        removed = retriever_instance.remove_chunks_by_document_id(doc_id)
+        if not removed:
+            retriever_instance.remove_chunks_by_filename(filename)
+    except Exception as e:
+        logger.error(
+            "Failed to remove chunks from retriever for document %d: %s",
+            document_id, e, exc_info=True,
+        )
+        # Don't abort — DB row is already deleted; the orphaned chunks
+        # will be cleaned up on next full re-index or manual purge.
 
     # Remove file only after the DB row is durably gone, so a commit failure
     # never leaves an orphaned record pointing at a deleted file.

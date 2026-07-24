@@ -26,7 +26,7 @@ export const UploadDropzone: React.FC<UploadDropzoneProps> = ({ onUploadSuccess,
     formData.append('file', file);
     try {
       const token = await getToken();
-      const res = await fetch('/api/documents/upload', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/documents/upload`, {
         method: 'POST',
         headers: {
           'X-User-Role': userRole,

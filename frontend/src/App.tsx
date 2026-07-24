@@ -121,7 +121,7 @@ export function App() {
   const fetchDocuments = async () => {
     try {
       const token = await getToken();
-      const res = await fetch('/api/documents/', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/documents/`, {
         headers: { 
           'X-User-Role': userRole,
           'Authorization': `Bearer ${token}`
@@ -172,7 +172,7 @@ export function App() {
 
     try {
       const token = await getToken();
-      const res = await fetch('/api/chat/query', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/chat/query`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -214,7 +214,7 @@ export function App() {
     if (userRole !== 'Admin') { alert('Deleting documents requires Admin role privileges.'); return; }
     try {
       const token = await getToken();
-      const res = await fetch(`/api/documents/${id}`, { 
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/documents/${id}`, { 
         method: 'DELETE', 
         headers: { 
           'X-User-Role': userRole,
@@ -249,7 +249,7 @@ export function App() {
     setSavedIds((prev) => new Set(prev).add(msg.id));
     try {
       const token = await getToken();
-      const res = await fetch('/api/bookmarks/', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/bookmarks/`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json', 
@@ -681,7 +681,7 @@ export function App() {
                 <div className="flex-1 overflow-hidden bg-surface-1">
                   {(() => {
                     const ft = previewDoc.file_type.toLowerCase();
-                    const fileUrl = `/api/documents/${previewDoc.id}/file`;
+                    const fileUrl = `${import.meta.env.VITE_API_URL || ''}/api/documents/${previewDoc.id}/file`;
 
                     // PDF — native browser iframe viewer
                     if (ft === 'pdf') {

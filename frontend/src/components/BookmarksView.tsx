@@ -25,7 +25,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ userRole }) => {
   const fetchBookmarks = async () => {
     setLoading(true);
     try {
-      let url = '/api/bookmarks/';
+      let url = `${import.meta.env.VITE_API_URL || ''}/api/bookmarks/`;
       if (searchQuery.trim()) url += `?search=${encodeURIComponent(searchQuery.trim())}`;
       const token = await getToken();
       const res = await fetch(url, {
@@ -43,7 +43,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({ userRole }) => {
   const handleDelete = async (id: number) => {
     try {
       const token = await getToken();
-      const res = await fetch(`/api/bookmarks/${id}`, { 
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/bookmarks/${id}`, { 
         method: 'DELETE',
         headers: { 
           'X-User-Role': userRole,

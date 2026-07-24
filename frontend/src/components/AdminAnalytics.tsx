@@ -30,7 +30,7 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ userRole }) => {
     setLoading(true);
     try {
       const token = await getToken();
-      const res = await fetch('/api/analytics/dashboard', { 
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/analytics/dashboard`, { 
         headers: { 
           'X-User-Role': userRole,
           'Authorization': `Bearer ${token}` 

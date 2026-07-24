@@ -41,7 +41,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 
   // Construct the URL for the embedded PDF viewer via the document file endpoint
   const pdfUrl = activeCitation?.document_id
-    ? `/api/documents/${activeCitation.document_id}/file${
+    ? `${import.meta.env.VITE_API_URL || ''}/api/documents/${activeCitation.document_id}/file${
         activeCitation.bbox && activeCitation.page_number === currentPage
           ? `?page=${activeCitation.page_number}&bbox=${activeCitation.bbox.x0},${activeCitation.bbox.y0},${activeCitation.bbox.x1},${activeCitation.bbox.y1}#page=${currentPage}`
           : `#page=${currentPage}`
