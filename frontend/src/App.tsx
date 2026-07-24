@@ -221,6 +221,12 @@ export function App() {
           'Authorization': `Bearer ${token}`
         } 
       });
+      // If 404, it's already deleted on server — remove from local UI gracefully
+      if (res.status === 404) {
+        setDocuments((prev) => prev.filter((d) => d.id !== id));
+        return;
+      }
+
       if (!res.ok) {
         let errorMsg = 'Failed to delete document';
         try { const err = await res.json(); errorMsg = err.detail || errorMsg; } catch {}

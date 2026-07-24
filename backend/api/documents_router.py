@@ -367,7 +367,7 @@ def delete_document(
     """
     doc = db.query(Document).filter(Document.id == document_id).first()
     if not doc:
-        raise HTTPException(status_code=404, detail="Document not found")
+        return {"status": "success", "message": f"Document {document_id} already deleted."}
 
     file_path = doc.file_path
     filename = doc.filename
