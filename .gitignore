@@ -13,36 +13,24 @@ venv/
 ENV/
 env/
 .venv/
+.pytest_cache/
 *.db
 *.sqlite3
 
-# Document Uploads & Temp files
+# Index & Storage
+backend/index_data/
+index_data/
 backend/uploads/
 uploads/
+
+# Logs & Temporary files
 *.log
-
-# Environment files
-.env
-*.env
-!.env.example
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-venv/
-ENV/
-env/
-.venv/
-*.db
-*.sqlite3
-
-# Document Uploads & Temp files
-backend/uploads/
-uploads/
-*.log
+backend_logs.txt
+frontend_logs.txt
+chunk_dump.txt
+backend/chunk_dump.txt
+nul
+backend/nul
 
 # Node & Frontend
 node_modules/
@@ -50,7 +38,3 @@ frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/
 .DS_Store
-backend/index_data/faiss.index
-backend/index_data/retriever_data.pkl
-nul
-backend/nul
