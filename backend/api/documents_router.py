@@ -285,7 +285,8 @@ def get_document_chunks(document_id: int, db: Session = Depends(get_db)):
         } for c in chunks]
     }
 
-from fastapi.responses import FileResponse
+import fitz  # PyMuPDF
+from fastapi.responses import FileResponse, Response
 
 MIME_TYPE_MAP = {
     "pdf": "application/pdf",
@@ -304,18 +305,48 @@ MIME_TYPE_MAP = {
 @router.get("/{document_id}/file")
 async def get_document_file(
     document_id: int,
+    page: Optional[int] = Query(None),
+    bbox: Optional[str] = Query(None),
     db: Session = Depends(get_db),
 ):
     """
     Serve the original uploaded file for inline display (e.g. PDF viewer).
     Uses the internal storage path so UUID-based filenames are transparent.
+    If 'bbox' and 'page' are provided, temporarily applies a highlight to the PDF.
     """
     doc = db.query(Document).filter(Document.id == document_id).first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
     if not doc.file_path or not os.path.exists(doc.file_path):
         raise HTTPException(status_code=404, detail="File not found on disk")
+    
     media_type = MIME_TYPE_MAP.get(doc.file_type, "application/octet-stream")
+
+    # If it's a PDF and citation highlighting is requested
+    if doc.file_type.lower() == "pdf" and page and bbox:
+        try:
+            pdf = fitz.open(doc.file_path)
+            # PyMuPDF pages are 0-indexed, UI is 1-indexed
+            page_idx = page - 1
+            if 0 <= page_idx < len(pdf):
+                p = pdf[page_idx]
+                coords = [float(x) for x in bbox.split(",")]
+                if len(coords) == 4:
+                    rect = fitz.Rect(*coords)
+                    p.add_highlight_annot(rect)
+            
+            pdf_bytes = pdf.write()
+            pdf.close()
+            
+            return Response(
+                content=pdf_bytes,
+                media_type=media_type,
+                headers={"Content-Disposition": f'inline; filename="{doc.filename}"'}
+            )
+        except Exception as e:
+            logger.warning(f"Failed to apply highlight to {doc.filename}: {e}")
+            # Fallback to serving raw file on error
+
     return FileResponse(
         path=doc.file_path,
         filename=doc.filename,

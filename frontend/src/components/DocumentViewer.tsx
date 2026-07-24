@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { FileText, ChevronLeft, ChevronRight, ZoomIn, ZoomOut, ExternalLink } from 'lucide-react';
 
 interface CitationHighlight {
@@ -21,13 +21,6 @@ interface DocumentViewerProps {
   activeCitation?: CitationHighlight | null;
 }
 
-/**
- * A4 at 72 DPI → 595 × 842 pt.  This is our fallback when the chunk
- * metadata didn't capture the page dimensions.
- */
-const DEFAULT_PAGE_W = 595;
-const DEFAULT_PAGE_H = 842;
-
 export const DocumentViewer: React.FC<DocumentViewerProps> = ({
   filename = 'Transformer_Warranty_Manual.pdf',
   activeCitation = null,
@@ -35,7 +28,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(activeCitation?.page_number || 1);
   const [zoom, setZoom] = useState<number>(100);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [overlayDims, setOverlayDims] = useState({ w: 0, h: 0 });
 
   const targetFilename = activeCitation?.filename || filename;
   const isPdf = targetFilename.toLowerCase().endsWith('.pdf');
@@ -47,50 +39,15 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
     }
   }, [activeCitation]);
 
-  // Compute the effective render dimensions of the PDF viewer container
-  // so we can scale the bbox coordinates correctly.
-  const measuredRef = useCallback((node: HTMLDivElement | null) => {
-    if (node) {
-      const rect = node.getBoundingClientRect();
-      setOverlayDims({ w: rect.width, h: rect.height });
-    }
-  }, []);
-
-  /**
-   * Scale a parser-coordinate bbox to the current viewport.
-   *
-   * The PDF <object> fills its parent div, which is already scaled by
-   * ``transform: scale(zoom/100)``.  Therefore we only need to convert
-   * from PDF points to the parent's layout size (overlayDims) — the
-   * zoom transform handles the rest.
-   */
-  const scale = (value: number, dimension: 'x' | 'y'): number => {
-    const pageW = activeCitation?.page_width ?? DEFAULT_PAGE_W;
-    const pageH = activeCitation?.page_height ?? DEFAULT_PAGE_H;
-    const ratio = dimension === 'x' ? overlayDims.w / pageW : overlayDims.h / pageH;
-    return value * ratio;
-  };
 
   // Construct the URL for the embedded PDF viewer via the document file endpoint
   const pdfUrl = activeCitation?.document_id
-    ? `/api/documents/${activeCitation.document_id}/file#page=${currentPage}`
+    ? `/api/documents/${activeCitation.document_id}/file${
+        activeCitation.bbox && activeCitation.page_number === currentPage
+          ? `?page=${activeCitation.page_number}&bbox=${activeCitation.bbox.x0},${activeCitation.bbox.y0},${activeCitation.bbox.x1},${activeCitation.bbox.y1}#page=${currentPage}`
+          : `#page=${currentPage}`
+      }`
     : undefined;
-
-  const bboxStyle: React.CSSProperties | undefined =
-    activeCitation?.bbox && activeCitation.page_number === currentPage
-      ? {
-          position: 'absolute',
-          top: scale(activeCitation.bbox.y0, 'y'),
-          left: scale(activeCitation.bbox.x0, 'x'),
-          width: scale(activeCitation.bbox.x1 - activeCitation.bbox.x0, 'x'),
-          height: Math.max(
-            28,
-            scale(activeCitation.bbox.y1 - activeCitation.bbox.y0, 'y'),
-          ),
-          pointerEvents: 'none' as const,
-          zIndex: 10,
-        }
-      : undefined;
 
   return (
     <div className="flex flex-col h-full bg-surface-0 border border-border-subtle rounded-xl overflow-hidden shadow-sm">
@@ -170,7 +127,7 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
       )}
 
       {/* ── Document canvas ────────────────────────────────────────── */}
-      <div className="relative flex-1 overflow-auto bg-surface-1" ref={measuredRef}>
+      <div className="relative flex-1 overflow-auto bg-surface-1">
         {/* If we have a real PDF URL, embed it via <object> */}
         {isPdf && pdfUrl ? (
           <div
@@ -197,14 +154,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
                 </p>
               </div>
             </object>
-
-            {/* ── Bbox highlight overlay ──────────────────────────────── */}
-            {bboxStyle && (
-              <div 
-                className="absolute mix-blend-multiply bg-yellow-300/40 border-b-2 border-yellow-400 rounded-sm"
-                style={bboxStyle}
-              />
-            )}
           </div>
         ) : (
           /* ── Fallback text viewer for non-PDF documents ──────────── */
