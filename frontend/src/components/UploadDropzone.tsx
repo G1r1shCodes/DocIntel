@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { UploadCloud, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '@clerk/clerk-react';
 

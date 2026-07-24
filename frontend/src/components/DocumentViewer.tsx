@@ -27,7 +27,6 @@ export const DocumentViewer: React.FC<DocumentViewerProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState<number>(activeCitation?.page_number || 1);
   const [zoom, setZoom] = useState<number>(100);
-  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const targetFilename = activeCitation?.filename || filename;
   const isPdf = targetFilename.toLowerCase().endsWith('.pdf');

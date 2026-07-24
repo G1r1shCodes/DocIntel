@@ -19,8 +19,7 @@ import {
   HelpCircle,
   Check,
   Eye,
-  Download,
-  Image
+  Download
 } from 'lucide-react';
 import { DocumentViewer } from './components/DocumentViewer';
 import { UploadDropzone } from './components/UploadDropzone';
