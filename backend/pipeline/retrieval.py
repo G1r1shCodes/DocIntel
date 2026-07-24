@@ -490,7 +490,7 @@ retriever_instance = HybridRetriever()
 def compress_context(
     query: str,
     retrieved_chunks: list[dict[str, Any]],
-    max_chars: int = 1500,
+    max_chars: int = 10000,
 ) -> str:
     """Join retrieved chunks into a single context string for the LLM."""
     blocks: list[str] = []

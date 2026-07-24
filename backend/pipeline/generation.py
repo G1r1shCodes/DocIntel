@@ -184,16 +184,19 @@ async def run_guardrails(query: str) -> Tuple[bool, str]:
 async def run_query_rewrite(query: str) -> str:
     """
     Rewrites user query to optimize hybrid vector & keyword retrieval.
-
-    Previously appended generic technical jargon ("detailed specifications
-    technical document parameters") to short queries, which biased results
-    toward technical manuals and made the system useless for non-technical
-    content like resumes, HR documents, or general business files.
-
-    Now simply returns the original query unchanged — modern embedding
-    models (BGE / all-MiniLM) handle short queries well, and BM25 keyword
-    matching works naturally without artificial expansion.
+    Appends synonym terms for key concepts like traveller/passenger and location/address.
     """
+    q_lower = query.lower()
+    expansions = []
+    if "traveller" in q_lower or "traveler" in q_lower or "passenger" in q_lower:
+        expansions.append("passenger name traveller traveler pax")
+    if "location" in q_lower or "place" in q_lower or "address" in q_lower:
+        expansions.append("location address city place of work office posting")
+    if "role" in q_lower or "position" in q_lower or "designation" in q_lower:
+        expansions.append("role position designation title job")
+
+    if expansions:
+        return f"{query} {' '.join(expansions)}"
     return query
 
 
