@@ -40,7 +40,7 @@ class APIEmbedder:
     Calls NVIDIA NIM / OpenAI Embeddings API or Pinecone Inference API.
     Zero PyTorch dependency, zero RAM overhead!
     """
-    def encode(self, texts: list[str], show_progress_bar: bool = False) -> np.ndarray:
+    def encode(self, texts: list[str], show_progress_bar: bool = False, input_type: str = "passage") -> np.ndarray:
         if not texts:
             return np.array([], dtype=np.float32)
 
@@ -53,9 +53,9 @@ class APIEmbedder:
                 res = pc.inference.embed(
                     model="multilingual-e5-large",
                     inputs=texts,
-                    parameters={"input_type": "passage", "truncate": "END"}
+                    parameters={"input_type": input_type, "truncate": "END"}
                 )
-                embeddings = [e["values"] for e in res.data if "values" in e]
+                embeddings = [e["values"] if isinstance(e, dict) else getattr(e, "values", []) for e in res.data]
                 if embeddings:
                     return np.array(embeddings, dtype=np.float32)
             except Exception as e:
@@ -67,7 +67,11 @@ class APIEmbedder:
             try:
                 from openai import OpenAI
                 client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=nvidia_key)
-                res = client.embeddings.create(input=texts, model="nvidia/nv-embedqa-e5-v5")
+                res = client.embeddings.create(
+                    input=texts,
+                    model="nvidia/nv-embedqa-e5-v5",
+                    extra_body={"input_type": input_type}
+                )
                 return np.array([d.embedding for d in res.data], dtype=np.float32)
             except Exception as e:
                 logger.warning(f"NVIDIA NIM embedding API failed: {e}")
@@ -363,7 +367,7 @@ class HybridRetriever:
         embedder = get_embedder()
 
         # 1. Dense retrieval
-        query_vec = embedder.encode([query]).astype("float32")
+        query_vec = embedder.encode([query], input_type="query").astype("float32")
         distances, dense_indices = self.vector_index.search(
             query_vec, min(top_k_dense, len(self.chunks)),
         )
