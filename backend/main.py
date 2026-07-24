@@ -46,8 +46,8 @@ import asyncio
 
 async def background_init():
     print("Initializing embedding models and loading indexes...", flush=True)
-    get_embedder()
-    retriever_instance.load()
+    await asyncio.to_thread(get_embedder)
+    await asyncio.to_thread(retriever_instance.load)
     print("Startup complete: models + index loaded.", flush=True)
 
 @app.on_event("startup")
