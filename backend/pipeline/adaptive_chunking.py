@@ -4,7 +4,7 @@ from parsers.base_parser import DocumentData, PageData
 
 def adaptive_chunking(
     document: DocumentData,
-    target_chunk_size: int = 400,
+    target_chunk_size: int = 600,
     overlap: int = 50,
 ) -> List[Dict[str, Any]]:
     """
