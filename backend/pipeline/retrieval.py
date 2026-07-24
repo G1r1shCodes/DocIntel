@@ -99,22 +99,62 @@ def get_embedder():
     return _embedder
 
 
+class APIReranker:
+    """
+    Lightweight API-based Reranker wrapper.
+    Calls Pinecone Rerank API (bge-reranker-large / cohere-rerank-v3.0) over Cloud.
+    Zero PyTorch dependency, zero RAM overhead!
+    """
+    def predict(self, pairs: list[list[str]]) -> list[float]:
+        if not pairs:
+            return []
+
+        pinecone_key = os.environ.get("PINECONE_API_KEY")
+        if pinecone_key and pinecone_key != "your_pinecone_api_key_here":
+            try:
+                from pinecone import Pinecone
+                pc = Pinecone(api_key=pinecone_key)
+                query = pairs[0][0]
+                documents = [p[1] for p in pairs]
+                res = pc.inference.rerank(
+                    model="bge-reranker-large",
+                    query=query,
+                    documents=documents,
+                    top_n=len(documents)
+                )
+                scores = [0.0] * len(documents)
+                for item in res.data:
+                    idx = item.get("index", 0)
+                    if idx < len(scores):
+                        scores[idx] = float(item.get("score", 0.0))
+                return scores
+            except Exception as e:
+                logger.warning(f"Pinecone Rerank API call failed: {e}")
+
+        # Fallback: token overlap relevance score
+        scores = []
+        for query, doc_text in pairs:
+            q_words = set(query.lower().split())
+            d_words = set(doc_text.lower().split())
+            overlap = len(q_words.intersection(d_words)) / max(1, len(q_words))
+            scores.append(float(overlap))
+        return scores
+
+
 def get_cross_encoder():
     global _cross_encoder
-    if os.environ.get("DISABLE_CROSS_ENCODER", "true").lower() == "true":
+    if os.environ.get("DISABLE_CROSS_ENCODER", "false").lower() == "true":
         return None
     if _cross_encoder is None:
         try:
             import torch
             torch.set_num_threads(1)
-        except Exception:
-            pass
-        from sentence_transformers import CrossEncoder
-        model_name = os.environ.get("CROSS_ENCODER_MODEL_NAME", "cross-encoder/ms-marco-MiniLM-L-6-v2")
-        try:
+            from sentence_transformers import CrossEncoder
+            model_name = os.environ.get("CROSS_ENCODER_MODEL_NAME", "cross-encoder/ms-marco-MiniLM-L-6-v2")
             _cross_encoder = CrossEncoder(model_name)
-        except Exception as exc:
-            logger.warning("Could not load CrossEncoder %s: %s", model_name, exc)
+        except Exception:
+            # Fall back to zero-PyTorch Cloud API Reranker
+            _cross_encoder = APIReranker()
     return _cross_encoder
 
 
