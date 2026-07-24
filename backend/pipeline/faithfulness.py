@@ -57,29 +57,69 @@ def _check_answer_in_context(answer: str, retrieved_chunks: List[Dict[str, Any]]
     return False
 
 
+REFUSAL_PHRASES = [
+    "not found", "cannot find", "not mentioned", "no information", "does not contain",
+    "does not state", "not provided", "unspecified", "not listed", "no mention"
+]
+
+
 async def check_faithfulness(answer: str, retrieved_chunks: List[Dict[str, Any]]) -> Tuple[bool, str]:
     """
-    Faithfulness Check: Verifies whether the generated answer is grounded
-    in the provided document context.
+    Anti-Hallucination & Faithfulness Guardrail:
+    Verifies whether the generated answer is strictly grounded in the retrieved document context.
 
-    Uses a keyword/substring heuristic for short answers (≤ 80 chars)
-    and logs the result.  Always returns **FAITHFUL** when chunks exist
-    because an LLM-based check (previously used here) was unreliable,
-    slow, and expensive — returning false negatives for correct answers.
+    Checks:
+    1. Entity & Numeric Verification (numbers, dates, currency, percentages)
+    2. Substring & Keyword Grounding Ratio
+    3. Non-hallucinatory refusal detection
 
-    Returns (is_faithful, answer_text)
+    Returns (is_faithful: bool, final_answer: str)
     """
     if not retrieved_chunks:
         return False, answer
 
-    # ── Heuristic check (log-only — result is informational) ─────────────
-    if len(answer.strip()) < _SHORT_ANSWER_THRESHOLD:
-        found = _check_answer_in_context(answer, retrieved_chunks)
-        if not found:
-            logger.info(
-                "Short answer (%d chars) NOT found in context via heuristic — "
-                "defaulting to FAITHFUL since chunks exist",
-                len(answer.strip()),
-            )
+    answer_clean = answer.strip()
+    answer_lower = answer_clean.lower()
 
-    return True, answer
+    # 1. If LLM correctly refused to invent facts, it is FAITHFUL
+    if any(phrase in answer_lower for phrase in REFUSAL_PHRASES):
+        logger.info("[Hallucination Guardrail] Answer is a valid refusal — marked as FAITHFUL.")
+        return True, answer_clean
+
+    # Combine all retrieved context text into one normalized string
+    context_text = " ".join([c.get("text", "") for c in retrieved_chunks]).lower()
+    context_norm = re.sub(r'\s+', ' ', context_text)
+
+    # 2. Numeric & Figure Hallucination Verification
+    # Extract numbers/dates/currency/percentages (e.g. 2027, $500, 95%, 42)
+    numbers_in_answer = set(re.findall(r'\b\$?\d+(?:\.\d+)?%?\b', answer_clean))
+    
+    hallucinated_figures = []
+    for num in numbers_in_answer:
+        # Skip single digit numbers (1-9) often used for formatting or bullet points
+        if len(num) == 1 and num in "123456789":
+            continue
+        if num.lower() not in context_norm:
+            hallucinated_figures.append(num)
+
+    if hallucinated_figures:
+        logger.warning(f"[Hallucination Guardrail] DETECTED HALLUCINATION! Unbacked figures in answer: {hallucinated_figures}")
+        print(f"[Hallucination Guardrail] Flagged unbacked figures: {hallucinated_figures}", flush=True)
+        return False, answer_clean
+
+    # 3. Grounding Ratio Check (N-gram / Keyword Overlap)
+    words = [w for w in re.split(r'[\s,;:().!?"\']+', answer_lower) if len(w) > 3]
+    if not words:
+        return True, answer_clean
+
+    matched_words = sum(1 for w in words if w in context_norm)
+    grounding_ratio = matched_words / len(words)
+
+    logger.info(f"[Hallucination Guardrail] Grounding ratio: {grounding_ratio:.2f} ({matched_words}/{len(words)} key words matched)")
+
+    if grounding_ratio < 0.35:
+        logger.warning(f"[Hallucination Guardrail] DETECTED UNGROUNDED CLAIM! Grounding ratio {grounding_ratio:.2f} < 0.35")
+        print(f"[Hallucination Guardrail] Flagged ungrounded claim (ratio {grounding_ratio:.2f})", flush=True)
+        return False, answer_clean
+
+    return True, answer_clean
