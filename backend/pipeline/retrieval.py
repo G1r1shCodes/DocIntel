@@ -14,12 +14,7 @@ import logging
 from pathlib import Path
 from typing import Any, List, Dict
 
-import faiss
 import numpy as np
-from rank_bm25 import BM25Okapi
-from sentence_transformers import CrossEncoder, SentenceTransformer
-
-logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Lazy model initialisation
@@ -34,9 +29,10 @@ _INDEX_DIR = os.environ.get(
 )
 
 
-def get_embedder() -> SentenceTransformer:
+def get_embedder():
     global _embedder
     if _embedder is None:
+        from sentence_transformers import SentenceTransformer
         try:
             _embedder = SentenceTransformer("BAAI/bge-small-en-v1.5")
         except Exception as exc:
@@ -45,9 +41,10 @@ def get_embedder() -> SentenceTransformer:
     return _embedder
 
 
-def get_cross_encoder() -> CrossEncoder | None:
+def get_cross_encoder():
     global _cross_encoder
     if _cross_encoder is None:
+        from sentence_transformers import CrossEncoder
         try:
             _cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
         except Exception as exc:
@@ -120,6 +117,8 @@ class HybridRetriever:
         self._next_faiss_id += count
 
         # Create or extend the FAISS index
+        import faiss
+        from rank_bm25 import BM25Okapi
         if self.vector_index is None:
             dimension = float_emb.shape[1]
             flat_index = faiss.IndexFlatL2(dimension)
@@ -200,6 +199,7 @@ class HybridRetriever:
         # Rebuild BM25 (no incremental remove support)
         self.chunks = kept
         if kept:
+            from rank_bm25 import BM25Okapi
             texts = [c["text"] for c in kept]
             self.bm25_index = BM25Okapi([t.lower().split() for t in texts])
         else:
@@ -309,6 +309,7 @@ class HybridRetriever:
         Safe to call after every mutating operation (add / remove).
         """
         try:
+            import faiss
             if self.vector_index is not None:
                 faiss.write_index(self.vector_index, str(self._index_path()))
 
@@ -336,6 +337,8 @@ class HybridRetriever:
             return
 
         try:
+            import faiss
+            from rank_bm25 import BM25Okapi
             self.vector_index = faiss.read_index(str(idx_path))
 
             with open(data_path, "rb") as f:
