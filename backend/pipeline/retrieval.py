@@ -51,6 +51,8 @@ def get_embedder():
 
 def get_cross_encoder():
     global _cross_encoder
+    if os.environ.get("DISABLE_CROSS_ENCODER", "true").lower() == "true":
+        return None
     if _cross_encoder is None:
         try:
             import torch
@@ -295,13 +297,16 @@ class HybridRetriever:
         sorted_candidates = sorted(rrf, key=rrf.__getitem__, reverse=True)[:30]
         candidate_chunks = [self.chunks[i] for i in sorted_candidates]
 
-        # 4. Cross-encoder re-ranking
-        cross_enc = get_cross_encoder()
-        if cross_enc and candidate_chunks:
-            pairs = [[query, c["text"]] for c in candidate_chunks]
-            scores = cross_enc.predict(pairs)
-            reranked = np.argsort(scores)[::-1][:top_n_rerank]
-            return [candidate_chunks[i] for i in reranked]
+        # 4. Cross-encoder re-ranking (Optional / fallback to RRF)
+        try:
+            cross_enc = get_cross_encoder()
+            if cross_enc and candidate_chunks:
+                pairs = [[query, c["text"]] for c in candidate_chunks]
+                scores = cross_enc.predict(pairs)
+                reranked = np.argsort(scores)[::-1][:top_n_rerank]
+                return [candidate_chunks[i] for i in reranked]
+        except Exception as exc:
+            pass
 
         return candidate_chunks[:top_n_rerank]
 
