@@ -139,12 +139,11 @@ async def process_chat_query(
         "7. For specific fields like graduation year, roll number, guide name — "
         "extract ONLY that exact field, not a similar-looking number from elsewhere.\n"
         "8. If the CONTEXT truly has no answer, say exactly: Not found in the document.\n"
-        "Examples (these show the FORMAT, extract YOUR data from CONTEXT):\n"
-        "  What is the candidate's name? → Girish Kumar Yadav\n"
-        "  List all projects → PathShala AI, Waste Classification System, BimaBot\n"
-        "  What are his skills → Python, C, SQL, PyTorch, TensorFlow, FastAPI\n"
-        "  Graduation year → 2027\n"
-        "  What certifications → AWS Generative AI, IBM AI Fundamentals\n"
+        "Examples (these show FORMAT ONLY — extract YOUR values strictly from CONTEXT):\n"
+        "  What is the candidate's name? → [Name from context]\n"
+        "  List all projects → [Project 1, Project 2]\n"
+        "  What are the skills → [Skill 1, Skill 2, Skill 3]\n"
+        "  Graduation year → [Year]\n"
     )
     llm_prompt = f"CONTEXT:\n{compressed_context}\n\nUSER QUESTION: {user_query}"
     t_gen_start = time.time()
